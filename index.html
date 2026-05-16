@@ -152,30 +152,32 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kak
 /* 入力エリア */
 #input-area{
   background:var(--surface);
-  border-top:1.5px solid var(--border);
-  padding:10px 12px;
-  padding-bottom:max(10px, env(safe-area-inset-bottom));
-  display:flex;gap:8px;align-items:flex-end;
+  border-top:2px solid var(--primary);
+  padding:14px 16px;
+  padding-bottom:max(14px, env(safe-area-inset-bottom));
+  display:flex;gap:10px;align-items:flex-end;
   flex-shrink:0;
+  box-shadow:0 -4px 16px rgba(46,158,124,0.12);
 }
 #msg-input{
-  flex:1;border:1.5px solid var(--border);
-  border-radius:20px;padding:10px 14px;
-  font-size:1rem;font-family:inherit;
+  flex:1;border:2px solid var(--primary);
+  border-radius:24px;padding:14px 18px;
+  font-size:1.1rem;font-family:inherit;
   resize:none;max-height:120px;overflow-y:auto;
-  line-height:1.5;background:#f9fdfb;
+  line-height:1.5;background:#fff;
   transition:border-color 0.2s, box-shadow 0.2s;
   outline:none;color:var(--text);
+  box-shadow:0 2px 8px rgba(46,158,124,0.15);
 }
-#msg-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,158,124,0.15);background:#fff;}
+#msg-input:focus{border-color:var(--primary-dark);box-shadow:0 0 0 4px rgba(46,158,124,0.2);background:#fff;}
 #btn-send{
   background:var(--primary);color:#fff;
-  border:none;width:42px;height:42px;
+  border:none;width:52px;height:52px;
   border-radius:50%;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  font-size:1.1rem;flex-shrink:0;
+  font-size:1.4rem;flex-shrink:0;
   transition:background 0.2s, transform 0.1s;
-  box-shadow:0 2px 8px rgba(46,158,124,0.35);
+  box-shadow:0 4px 14px rgba(46,158,124,0.45);
 }
 #btn-send:hover{background:var(--primary-dark);}
 #btn-send:active{transform:scale(0.93);}
