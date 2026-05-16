@@ -54,6 +54,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kak
   border-radius:50%;font-size:1.1rem;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   transition:background 0.2s;
+  position:relative;
 }
 #btn-settings:hover{background:rgba(255,255,255,0.35);}
 #btn-top{
@@ -247,43 +248,14 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kak
       <div class="title-main">てのひら福祉相談</div>
       <div class="title-sub">みんなのための福祉AIアシスタント</div>
     </div>
-    <a href="https://mahitogawa.github.io/tenohira/" id="btn-top">TOP</a>
-    <button id="btn-settings" title="設定">⚙️</button>
+    <a href="https://mahitogawa.github.io/tenohira/" id="btn-top" onclick="handleTop(event)">TOP</a>
+    <button id="btn-settings" title="設定" onclick="openSettings()">⚙️<span id="profile-badge" style="display:none;position:absolute;top:2px;right:2px;width:8px;height:8px;background:#f59e2e;border-radius:50%;border:1.5px solid var(--primary);"></span></button>
   </div>
 
   <!-- チャットエリア -->
   <div id="chat-area">
     <!-- ウェルカム -->
     <div id="welcome">
-      <div id="inline-profile" style="width:100%;background:var(--primary-light);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;">
-        <div style="font-size:0.88rem;font-weight:700;color:var(--text-sub);margin-bottom:12px;">👤 あなたの情報（任意）</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <select id="pf-hand2" onchange="syncProfile()" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:1rem;font-family:inherit;background:#fff;color:var(--text);outline:none;">
-            <option value="">障害・手帳の種類を選ぶ</option>
-            <option value="精神障害者保健福祉手帳">精神障害者保健福祉手帳</option>
-            <option value="身体障害者手帳">身体障害者手帳</option>
-            <option value="療育手帳">療育手帳（知的障害）</option>
-            <option value="複数の手帳">複数の手帳を所持</option>
-            <option value="手帳なし">手帳なし（申請検討中）</option>
-          </select>
-          <select id="pf-grade2" onchange="syncProfile()" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:1rem;font-family:inherit;background:#fff;color:var(--text);outline:none;">
-            <option value="">等級・程度を選ぶ</option>
-            <option value="1級">1級（最も重度）</option>
-            <option value="2級">2級</option>
-            <option value="3級">3級</option>
-            <option value="A判定">A判定（療育）</option>
-            <option value="B判定">B判定（療育）</option>
-          </select>
-          <select id="pf-age2" onchange="syncProfile()" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:1rem;font-family:inherit;background:#fff;color:var(--text);outline:none;">
-            <option value="">年齢を選ぶ</option>
-            <option value="20歳未満">20歳未満</option>
-            <option value="20〜39歳">20〜39歳</option>
-            <option value="40〜64歳">40〜64歳</option>
-            <option value="65歳以上">65歳以上</option>
-          </select>
-          <input id="pf-region2" type="text" placeholder="都道府県（例：愛知県）" onchange="syncProfile()" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:1rem;font-family:inherit;background:#fff;color:var(--text);outline:none;">
-        </div>
-      </div>
       <h2>なんでも聞いてね</h2>
       <p>福祉サービス・手当・申請のこと、<br>日常の困りごと、気軽に相談してください。</p>
       <div class="quick-label">よく聞かれること：</div>
@@ -369,33 +341,51 @@ let isLoading = false;
 function init() {
   try { chatHistory = JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch(e) { chatHistory = []; }
   try { profile = JSON.parse(localStorage.getItem(PROFILE_KEY)) || {}; } catch(e) { profile = {}; }
-  // モーダル側
   if (profile.hand) document.getElementById('pf-hand').value = profile.hand || '';
   if (profile.grade) document.getElementById('pf-grade').value = profile.grade || '';
   if (profile.age) document.getElementById('pf-age').value = profile.age || '';
   if (profile.region) document.getElementById('pf-region').value = profile.region || '';
-  // インライン側
-  if (profile.hand) document.getElementById('pf-hand2').value = profile.hand || '';
-  if (profile.grade) document.getElementById('pf-grade2').value = profile.grade || '';
-  if (profile.age) document.getElementById('pf-age2').value = profile.age || '';
-  if (profile.region) document.getElementById('pf-region2').value = profile.region || '';
+  updateBadge();
   restoreHistory();
   setupInput();
 }
 
+function updateBadge() {
+  const hasProfile = profile.hand || profile.grade || profile.age || profile.region;
+  const badge = document.getElementById('profile-badge');
+  // 未設定ならオレンジ点滅バッジ、設定済みなら非表示
+  badge.style.display = hasProfile ? 'none' : 'block';
+}
+
+function handleTop(e) {
+  // iPhoneホーム画面追加時（standalone）はページ遷移せずウェルカムに戻す
+  if (window.navigator.standalone) {
+    e.preventDefault();
+    chatHistory = [];
+    localStorage.removeItem(HISTORY_KEY);
+    const area = document.getElementById('chat-area');
+    [...area.querySelectorAll('.msg')].forEach(el => el.remove());
+    document.getElementById('welcome').style.display = 'flex';
+  }
+}
+
+function openSettings() {
+  document.getElementById('modal-overlay').classList.add('visible');
+}
+
 function syncProfile() {
   profile = {
-    hand: document.getElementById('pf-hand2').value,
-    grade: document.getElementById('pf-grade2').value,
-    age: document.getElementById('pf-age2').value,
-    region: document.getElementById('pf-region2').value
+    hand: document.getElementById('pf-hand2') ? document.getElementById('pf-hand2').value : '',
+    grade: document.getElementById('pf-grade2') ? document.getElementById('pf-grade2').value : '',
+    age: document.getElementById('pf-age2') ? document.getElementById('pf-age2').value : '',
+    region: document.getElementById('pf-region2') ? document.getElementById('pf-region2').value : ''
   };
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-  // モーダル側にも反映
   document.getElementById('pf-hand').value = profile.hand || '';
   document.getElementById('pf-grade').value = profile.grade || '';
   document.getElementById('pf-age').value = profile.age || '';
   document.getElementById('pf-region').value = profile.region || '';
+  updateBadge();
 }
 
 function restoreHistory() {
@@ -489,9 +479,6 @@ function setupInput() {
   btn.addEventListener('click', () => sendMessage(input.value));
 }
 
-document.getElementById('btn-settings').addEventListener('click', () => {
-  document.getElementById('modal-overlay').classList.add('visible');
-});
 document.getElementById('modal-overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('modal-overlay')) {
     document.getElementById('modal-overlay').classList.remove('visible');
@@ -506,6 +493,7 @@ function saveProfile() {
     region: document.getElementById('pf-region').value
   };
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  updateBadge();
   document.getElementById('modal-overlay').classList.remove('visible');
   const notice = document.createElement('div');
   notice.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:10px 20px;border-radius:20px;font-size:0.88rem;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,0.2);';
