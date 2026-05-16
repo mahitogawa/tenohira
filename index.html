@@ -49,16 +49,29 @@ button { cursor: pointer; font-family: inherit; }
 
 /* ===== サイドバー ===== */
 #sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
   width: 260px;
   background: #111;
   border-right: 0.5px solid var(--border);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  transform: translateX(-100%); /* 基本は画面の外に隠す */
   transition: transform 0.25s ease;
   z-index: 10;
   padding-top: env(safe-area-inset-top);
 }
+/* パソコンなどの広い画面ではサイドバーを常時表示 */
+@media (min-width: 641px) {
+  #sidebar {
+    position: relative;
+    transform: translateX(0);
+  }
+}
+#sidebar.open { transform: translateX(0); }
+#overlay.show { display: block; }
+
 #sb-header {
   padding: 16px 14px 12px;
   display: flex;
@@ -72,7 +85,7 @@ button { cursor: pointer; font-family: inherit; }
   border: none;
   color: var(--text-sub);
   font-size: 24px;
-  padding: 8px 12px; /* ★タップしやすいようにボタンの反応エリアを広く */
+  padding: 8px 12px;
   border-radius: 6px;
   transition: background 0.15s;
   display: inline-flex;
@@ -149,9 +162,7 @@ button { cursor: pointer; font-family: inherit; }
 /* ===== メイン ===== */
 #main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 
-/* ★トップバー：ボタンがバリアに埋もれないように構造を修正 */
 #top-bar {
-  /* 内側の上の余白にiPhoneの安全地帯（時計の高さ）を足す */
   padding-top: calc(12px + env(safe-area-inset-top));
   padding-bottom: 12px;
   padding-left: 14px;
@@ -163,7 +174,7 @@ button { cursor: pointer; font-family: inherit; }
   flex-shrink: 0;
   background: var(--bg);
   position: relative;
-  z-index: 2; /* ★ボタンを一番手前に持ってきてタップできるように変更 */
+  z-index: 2;
 }
 #top-title { flex: 1; text-align: center; font-size: 17px; color: var(--text-sub); }
 #model-badge {
@@ -330,17 +341,6 @@ button { cursor: pointer; font-family: inherit; }
 }
 #send-btn:hover { background: var(--primary-dark); }
 #send-btn:disabled { background: var(--surface2); box-shadow: none; cursor: not-allowed; color: var(--text-dim); }
-
-/* モバイル対応 */
-@media (max-width: 640px) {
-  #sidebar {
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-    transform: translateX(-100%);
-  }
-  #sidebar.open { transform: translateX(0); }
-  #overlay.show { display: block; }
-}
 </style>
 </head>
 <body>
@@ -382,3 +382,294 @@ button { cursor: pointer; font-family: inherit; }
     <div id="welcome">
       <div id="welcome-logo">🐱</div>
       <div id="welcome-title">なんでも話しかけてにゃ</div>
+      <div id="welcome-sub">福祉・障害年金・気分記録など<br>AIがあなたに必要なものを見つけます</div>
+      <div id="chips">
+        <div class="chip" onclick="ask('障害年金を申請したい')">💴 障害年金</div>
+        <div class="chip" onclick="ask('福祉サービスを調べたい')">🤲 福祉相談</div>
+        <div class="chip" onclick="ask('今日の気分を記録したい')">🐱 気分記録</div>
+        <div class="chip" onclick="ask('こころの症状をチェックしたい')">💙 こころチェック</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="input-area">
+    <div id="input-wrap">
+      <textarea id="main-input" rows="1" placeholder="なんでも話しかけてにゃ…"></textarea>
+      <div id="input-actions">
+        <div id="input-left">
+          <button class="icon-btn" id="btn-mic" title="音声入力">🎤</button>
+          <div id="input-model">てのひら AI</div>
+        </div>
+        <button id="send-btn" onclick="send()" title="送信">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const WORKER_URL = 'https://tenohira.mahito-ai.workers.dev';
+
+const APPS = {
+  tenohira:   { icon:'🤲', title:'てのひら福祉相談',      desc:'福祉サービス・手当・申請についてAIが相談に乗ります',      url:'https://mahitogawa.github.io/tenohira/' },
+  moushitate: { icon:'📝', title:'障害年金 申立書AI',      desc:'聞き取りながら、障害年金の申立書を一緒に作ります',        url:'https://mahitogawa.github.io/ai/moushitate-ai.html' },
+  nyanlog:    { icon:'🐱', title:'にゃんログ',              desc:'毎日の気分・お薬・症状を記録して受診に活かします',        url:'https://mahitogawa.github.io/nyanlog/' },
+  mental:     { icon:'💙', title:'こころのセルフチェック',  desc:'症状から気になる病気を参考表示。AIがやさしく解説します',  url:'https://mahitogawa.github.io/nyanlog/mental.html' },
+  passport:   { icon:'📚', title:'生成AIパスポート対策',    desc:'462問の練習問題でAI資格試験を準備します',                url:'https://mahitogawa.github.io/ai/' },
+};
+
+const SYSTEM_PROMPT = `あなたは「てのひらAI」です。障害・福祉・行政に詳しい、やさしいAIアシスタントです。
+高次脳機能障害、精神障害、身体障害など様々な障害のある方の相談に乗ります。
+簡潔でやさしい言葉で答えてください。専門用語は使わず、ブレインフォグがある方にも伝わるように。`;
+
+const INTENT_PROMPT = `ユーザーの入力から意図を判定してJSONのみ返してください。
+アプリ: tenohira(福祉相談), moushitate(障害年金申立書), nyanlog(気分記録), mental(こころチェック), passport(AI資格), general(その他)
+形式: {"intent":"ID","confidence":0.0~1.0}
+他の文字は一切含めないでください。`;
+
+let currentId = null;
+let messages = [];
+let isLoading = false;
+
+let histories = (() => {
+  const saved = localStorage.getItem('tenohira_histories');
+  if (saved) {
+    try { return JSON.parse(saved); } catch(e) { console.error(e); }
+  }
+  return [
+    { id:1, title:'障害年金の申請について', msgs: [] },
+    { id:2, title:'にゃんログ 気分記録', msgs: [] },
+    { id:3, title:'自立支援医療について', msgs: [] },
+    { id:4, title:'高次脳機能障害の手帳', msgs: [] },
+  ];
+})();
+
+const chatArea = document.getElementById('chat-area');
+const mainInput = document.getElementById('main-input');
+const sendBtn = document.getElementById('send-btn');
+const histList = document.getElementById('hist-list');
+const topTitle = document.getElementById('top-title');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+
+renderHistList();
+
+mainInput.addEventListener('input', () => {
+  mainInput.style.height = 'auto';
+  mainInput.style.height = Math.min(mainInput.scrollHeight, 120) + 'px';
+});
+mainInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+
+function toggleSidebar() {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+}
+function closeSidebar() {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+}
+
+const btnMic = document.getElementById('btn-mic');
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const rec = new SR();
+  rec.lang = 'ja-JP'; rec.continuous = false; rec.interimResults = false;
+  rec.onresult = e => {
+    mainInput.value = e.results[0][0].transcript;
+    mainInput.style.height = 'auto';
+    mainInput.style.height = Math.min(mainInput.scrollHeight, 120) + 'px';
+    btnMic.textContent = '🎤';
+    send();
+  };
+  rec.onend = () => btnMic.textContent = '🎤';
+  rec.onerror = () => btnMic.textContent = '🎤';
+  btnMic.addEventListener('click', () => {
+    if (btnMic.textContent === '🔴') { rec.stop(); btnMic.textContent = '🎤'; }
+    else { btnMic.textContent = '🔴'; rec.start(); }
+  });
+} else { btnMic.style.display = 'none'; }
+
+async function callWorker(messages, system) {
+  const body = system ? { system, messages } : { messages };
+  const res = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  return data.content?.map(c => c.text || '').join('') || '';
+}
+
+async function detectIntent(text) {
+  try {
+    const raw = await callWorker(
+      [{ role: 'user', content: INTENT_PROMPT + '\n\nユーザー入力：' + text }],
+      'JSONのみ返すルーターです。'
+    );
+    return JSON.parse(raw.replace(/```json|```/g, '').trim());
+  } catch {
+    return { intent: 'general', confidence: 0.5 };
+  }
+}
+
+function renderWelcome() {
+  chatArea.innerHTML = `
+    <div id="welcome">
+      <div id="welcome-logo">🐱</div>
+      <div id="welcome-title">なんでも話しかけてにゃ</div>
+      <div id="welcome-sub">福祉・障害年金・気分記録など<br>AIがあなたに必要なものを見つけます</div>
+      <div id="chips">
+        <div class="chip" onclick="ask('障害年金を申請したい')">💴 障害年金</div>
+        <div class="chip" onclick="ask('福祉サービスを調べたい')">🤲 福祉相談</div>
+        <div class="chip" onclick="ask('今日の気分を記録したい')">🐱 気分記録</div>
+        <div class="chip" onclick="ask('こころの症状をチェックしたい')">💙 こころチェック</div>
+      </div>
+    </div>`;
+}
+
+function addMsgEl(role, content, cards) {
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + role;
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar ' + role;
+  avatar.textContent = role === 'user' ? '😊' : '🐱';
+  const right = document.createElement('div');
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble ' + role;
+  bubble.textContent = content;
+  right.appendChild(bubble);
+  if (cards && cards.length > 0) {
+    const list = document.createElement('div');
+    list.className = 'card-list';
+    cards.forEach(card => {
+      const a = document.createElement('a');
+      a.className = 'app-card' + (card.primary ? ' primary' : '');
+      a.href = card.url;
+      a.target = '_blank';
+      a.innerHTML = `<div class="card-icon">${card.icon}</div><div class="card-body"><div class="card-title">${card.title}</div><div class="card-desc">${card.desc}</div></div><div class="card-arrow">›</div>`;
+      list.appendChild(a);
+    });
+    right.appendChild(list);
+  }
+  row.appendChild(avatar);
+  row.appendChild(right);
+  chatArea.appendChild(row);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function addTyping() {
+  const row = document.createElement('div');
+  row.className = 'msg-row ai'; row.id = 'typing-row';
+  row.innerHTML = `<div class="msg-avatar ai">🐱</div><div class="typing-bubble"><div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div></div>`;
+  chatArea.appendChild(row);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+function removeTyping() { const t = document.getElementById('typing-row'); if(t) t.remove(); }
+
+function renderHistList() {
+  histList.innerHTML = '';
+  histories.forEach(h => {
+    const el = document.createElement('div');
+    el.className = 'hist-item' + (h.id === currentId ? ' active' : '');
+    el.textContent = h.title;
+    el.onclick = () => selectHistory(h.id);
+    histList.appendChild(el);
+  });
+}
+
+function selectHistory(id) {
+  currentId = id;
+  const h = histories.find(x => x.id === id);
+  topTitle.textContent = h?.title || 'てのひら AI';
+  chatArea.innerHTML = '';
+  
+  if (h && h.msgs && h.msgs.length > 0) {
+    messages = h.msgs.map(m => ({ role: m.role, content: m.text, cards: m.cards }));
+    messages.forEach(m => {
+      addMsgEl(m.role, m.content, m.cards);
+    });
+  } else {
+    messages = [];
+    renderWelcome();
+  }
+  
+  renderHistList();
+  closeSidebar();
+}
+
+function newChat() {
+  currentId = null;
+  messages = [];
+  topTitle.textContent = 'てのひら AI';
+  renderWelcome();
+  renderHistList();
+  closeSidebar();
+}
+
+function ask(text) {
+  mainInput.value = text;
+  send();
+}
+
+async function send(textOverride) {
+  const text = (textOverride || mainInput.value).trim();
+  if (!text || isLoading) return;
+
+  mainInput.value = '';
+  mainInput.style.height = 'auto';
+  isLoading = true;
+  sendBtn.disabled = true;
+
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  if (!currentId) {
+    const newId = Date.now();
+    currentId = newId;
+    const title = text.slice(0, 18);
+    histories.unshift({ id: newId, title, msgs: [] });
+    localStorage.setItem('tenohira_histories', JSON.stringify(histories));
+    topTitle.textContent = title;
+    renderHistList();
+  }
+
+  messages.push({ role: 'user', content: text });
+  addMsgEl('user', text, null);
+  addTyping();
+
+  try {
+    const intent = await detectIntent(text);
+    removeTyping();
+
+    if (intent.intent !== 'general' && intent.confidence >= 0.7) {
+      const main = APPS[intent.intent];
+      const cards = [
+        ...(main ? [{ ...main, primary: true }] : []),
+        ...Object.entries(APPS)
+          .filter(([k]) => k !== intent.intent)
+          .map(([, v]) => ({ ...v, primary: false })),
+      ];
+      const aiText = `「${text}」についてお手伝いできるアプリを見つけました。`;
+      addMsgEl('assistant', aiText, cards);
+      messages.push({ role: 'assistant', content: aiText, cards: cards });
+    } else {
+      addTyping();
+      const reply = await callWorker(messages, SYSTEM_PROMPT);
+      removeTyping();
+      addMsgEl('assistant', reply, null);
+      messages.push({ role: 'assistant', content: reply });
+    }
+    
+    const currentHist = histories.find(x => x.id === currentId);
+    if (currentHist) {
+      currentHist.msgs = messages.map(m => ({ role: m.role, text: m.content, cards: m.cards }));
+      localStorage.setItem('tenohira_histories', JSON.stringify(histories));
+    }
+
+  } catch {
+    removeTyping();
+    addMsgEl('assistant', 'エラーが発生しました。もう一度お試しください。', null);
+  } finally {
+    isLoading = false;
+    sendBtn.disabled =
