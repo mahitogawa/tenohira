@@ -5,7 +5,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="てのひら">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="description" content="話しかけるだけ。AIがあなたに必要なものを見つけます。">
 <title>てのひら AI</title>
 <style>
@@ -23,15 +23,14 @@
   --primary-glow: rgba(46,158,124,0.2);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
 html { font-size: 20px; -webkit-text-size-adjust: 100%; }
 body {
   font-family: 'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;
   background: var(--bg);
   color: var(--text);
-  height: 100vh;
-  height: 100dvh;
   display: flex;
-  overflow: hidden;
+  position: relative;
 }
 button { cursor: pointer; font-family: inherit; }
 
@@ -40,7 +39,7 @@ button { cursor: pointer; font-family: inherit; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-/* 背景の黒いクッション */
+/* メニューを開いたときの背景の影（タップすると閉じる） */
 #overlay {
   display: none;
   position: fixed;
@@ -48,34 +47,36 @@ button { cursor: pointer; font-family: inherit; }
   background: rgba(0,0,0,0.6);
   z-index: 99;
 }
-#overlay.show {
-  display: block;
-}
+#overlay.show { display: block; }
 
-/* ===== サイドバー（メニュー） ===== */
+/* ===== サイドバー（メニュー）確実表示版 ===== */
 #sidebar {
+  position: fixed; /* 完全に浮かせて画面の一番上に重ねるにゃ */
+  top: 0; left: 0; bottom: 0;
   width: 260px;
   background: #111;
   border-right: 0.5px solid var(--border);
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
   z-index: 100;
   padding-top: env(safe-area-inset-top);
-  transition: transform 0.25s ease-in-out;
+  /* ★初期状態を画面の左外（見えない場所）にする */
+  transform: translateX(-265px);
+  transition: transform 0.2s ease-out;
 }
 
-/* ★スマホ用のメニュー設定（隠す） */
-@media (max-width: 640px) {
+/* ★メニューが開いたときは元の位置(0)に戻す */
+#sidebar.open {
+  transform: translateX(0);
+}
+
+/* パソコン用の広い画面のときだけ横に出しっぱなしにする設定 */
+@media (min-width: 769px) {
   #sidebar {
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-    transform: translateX(-100%); /* 画面の左外側に隠す */
-  }
-  /* メニューが開いたとき */
-  #sidebar.open {
+    position: relative;
     transform: translateX(0);
   }
+  #overlay.show { display: none; }
 }
 
 #sb-header {
@@ -93,7 +94,6 @@ button { cursor: pointer; font-family: inherit; }
   font-size: 24px;
   padding: 8px 12px;
   border-radius: 6px;
-  transition: background 0.15s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -109,7 +109,6 @@ button { cursor: pointer; font-family: inherit; }
   cursor: pointer;
   font-size: 18px;
   color: var(--text-sub);
-  transition: all 0.15s;
 }
 .nav-item:hover { background: var(--surface); color: var(--text); }
 
@@ -134,7 +133,6 @@ button { cursor: pointer; font-family: inherit; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: all 0.15s;
 }
 .hist-item:hover { background: var(--surface); color: var(--text); }
 .hist-item.active { background: var(--surface); color: var(--text); font-weight: 600; }
@@ -149,9 +147,7 @@ button { cursor: pointer; font-family: inherit; }
   gap: 8px;
   padding: 8px 10px;
   border-radius: 8px;
-  cursor: pointer;
 }
-#user-row:hover { background: var(--surface); }
 .user-avatar {
   width: 28px; height: 28px;
   border-radius: 50%;
@@ -162,10 +158,17 @@ button { cursor: pointer; font-family: inherit; }
 }
 #user-name { font-size: 16px; color: #777; flex: 1; }
 
-/* ===== メイン ===== */
-#main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+/* ===== メイン画面（絶対に押し出されない横幅100%固定） ===== */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
 
-/* トップバー（上の時計よけ） */
+/* トップバー */
 #top-bar {
   padding-top: calc(12px + env(safe-area-inset-top));
   padding-bottom: 12px;
@@ -177,8 +180,6 @@ button { cursor: pointer; font-family: inherit; }
   border-bottom: 0.5px solid var(--border);
   flex-shrink: 0;
   background: var(--bg);
-  position: relative;
-  z-index: 10;
 }
 #top-title { flex: 1; text-align: center; font-size: 17px; color: var(--text-sub); }
 #model-badge {
@@ -211,8 +212,7 @@ button { cursor: pointer; font-family: inherit; }
   padding: 20px;
   text-align: center;
 }
-#welcome-logo { font-size: 56px; animation: float 4s ease-in-out infinite; }
-@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+#welcome-logo { font-size: 56px; }
 #welcome-title { font-size: 26px; font-weight: 600; }
 #welcome-sub { font-size: 18px; color: #666; line-height: 1.7; }
 #chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
@@ -224,9 +224,7 @@ button { cursor: pointer; font-family: inherit; }
   font-size: 18px;
   color: var(--text-sub);
   cursor: pointer;
-  transition: all 0.2s;
 }
-.chip:hover { border-color: var(--primary); color: var(--text); }
 
 /* メッセージの泡 */
 .msg-row { display: flex; gap: 12px; }
@@ -279,14 +277,11 @@ button { cursor: pointer; font-family: inherit; }
   align-items: center;
   gap: 14px;
   cursor: pointer;
-  transition: all 0.2s;
   text-decoration: none;
 }
-.app-card:hover { opacity: 0.85; }
 .app-card.primary {
   background: #1a2e26;
   border: 1.5px solid var(--primary);
-  box-shadow: 0 0 0 1px var(--primary-glow), 0 4px 20px var(--primary-glow);
 }
 .card-icon { font-size: 32px; flex-shrink: 0; }
 .card-body { flex: 1; min-width: 0; }
@@ -335,9 +330,8 @@ button { cursor: pointer; font-family: inherit; }
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: 18px;
-  box-shadow: 0 2px 8px var(--primary-glow);
 }
-#send-btn:disabled { background: var(--surface2); box-shadow: none; cursor: not-allowed; color: #555; }
+#send-btn:disabled { background: var(--surface2); cursor: not-allowed; color: #555; }
 </style>
 </head>
 <body>
@@ -363,7 +357,6 @@ button { cursor: pointer; font-family: inherit; }
     <div id="user-row">
       <div class="user-avatar">M</div>
       <div id="user-name">mahitogawa</div>
-      <button class="icon-btn">⚙️</button>
     </div>
   </div>
 </div>
@@ -418,4 +411,239 @@ const SYSTEM_PROMPT = `あなたは「てのひらAI」です。障害・福祉�
 高次脳機能障害、精神障害、身体障害など様々な障害のある方の相談に乗ります。
 簡潔でやさしい言葉で答えてください。専門用語は使わず、ブレインフォグがある方にも伝わるように。`;
 
-const INTENT_PROMPT = `ユーザーの
+const INTENT_PROMPT = `ユーザーの入力から意図を判定してJSONのみ返してください。
+アプリ: tenohira(福祉相談), moushitate(障害年金申立書), nyanlog(気分記録), mental(こころチェック), passport(AI資格), general(その他)
+形式: {"intent":"ID","confidence":0.0~1.0}
+他の文字は一切含めないでください。`;
+
+const INITIAL_HISTORIES = [
+  { id:1, title:'障害年金の申請について' },
+  { id:2, title:'にゃんログ 気分記録' },
+  { id:3, title:'自立支援医療について' },
+  { id:4, title:'高次脳機能障害の手帳' },
+];
+
+let messages = [];
+let histories = [...INITIAL_HISTORIES];
+let currentId = null;
+let isLoading = false;
+
+const chatArea = document.getElementById('chat-area');
+const mainInput = document.getElementById('main-input');
+const sendBtn = document.getElementById('send-btn');
+const histList = document.getElementById('hist-list');
+const topTitle = document.getElementById('top-title');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+
+renderHistList();
+
+mainInput.addEventListener('input', () => {
+  mainInput.style.height = 'auto';
+  mainInput.style.height = Math.min(mainInput.scrollHeight, 120) + 'px';
+});
+mainInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+
+// メニュー開閉のボタン
+function toggleSidebar() {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+}
+function closeSidebar() {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+}
+
+// 音声入力
+const btnMic = document.getElementById('btn-mic');
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const rec = new SR();
+  rec.lang = 'ja-JP'; rec.continuous = false; rec.interimResults = false;
+  rec.onresult = e => {
+    mainInput.value = e.results[0][0].transcript;
+    mainInput.style.height = 'auto';
+    mainInput.style.height = Math.min(mainInput.scrollHeight, 120) + 'px';
+    btnMic.textContent = '🎤';
+    send();
+  };
+  rec.onend = () => btnMic.textContent = '🎤';
+  rec.onerror = () => btnMic.textContent = '🎤';
+  btnMic.addEventListener('click', () => {
+    if (btnMic.textContent === '🔴') { rec.stop(); btnMic.textContent = '🎤'; }
+    else { btnMic.textContent = '🔴'; rec.start(); }
+  });
+} else { btnMic.style.display = 'none'; }
+
+async function callWorker(messages, system) {
+  const body = system ? { system, messages } : { messages };
+  const res = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  return data.content?.map(c => c.text || '').join('') || '';
+}
+
+async function detectIntent(text) {
+  try {
+    const raw = await callWorker(
+      [{ role: 'user', content: INTENT_PROMPT + '\n\nユーザー入力：' + text }],
+      'JSONのみ返すルーターです。'
+    );
+    return JSON.parse(raw.replace(/```json|```/g, '').trim());
+  } catch {
+    return { intent: 'general', confidence: 0.5 };
+  }
+}
+
+function renderWelcome() {
+  chatArea.innerHTML = `
+    <div id="welcome">
+      <div id="welcome-logo">🐱</div>
+      <div id="welcome-title">なんでも話しかけてにゃ</div>
+      <div id="welcome-sub">福祉・障害年金・気分記録など<br>AIがあなたに必要なものを見つけます</div>
+      <div id="chips">
+        <div class="chip" onclick="ask('障害年金を申請したい')">💴 障害年金</div>
+        <div class="chip" onclick="ask('福祉サービスを調べたい')">🤲 福祉相談</div>
+        <div class="chip" onclick="ask('今日の気分を記録したい')">🐱 気分記録</div>
+        <div class="chip" onclick="ask('こころの症状をチェックしたい')">💙 こころチェック</div>
+      </div>
+    </div>`;
+}
+
+function addMsgEl(role, content, cards) {
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + role;
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar ' + role;
+  avatar.textContent = role === 'user' ? '😊' : '🐱';
+  const right = document.createElement('div');
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble ' + role;
+  bubble.textContent = content;
+  right.appendChild(bubble);
+  if (cards && cards.length > 0) {
+    const list = document.createElement('div');
+    list.className = 'card-list';
+    cards.forEach(card => {
+      const a = document.createElement('a');
+      a.className = 'app-card' + (card.primary ? ' primary' : '');
+      a.href = card.url;
+      a.target = '_blank';
+      a.innerHTML = `<div class="card-icon">${card.icon}</div><div class="card-body"><div class="card-title">${card.title}</div><div class="card-desc">${card.desc}</div></div><div class="card-arrow">›</div>`;
+      list.appendChild(a);
+    });
+    right.appendChild(list);
+  }
+  row.appendChild(avatar);
+  row.appendChild(right);
+  chatArea.appendChild(row);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function addTyping() {
+  const row = document.createElement('div');
+  row.className = 'msg-row ai'; row.id = 'typing-row';
+  row.innerHTML = `<div class="msg-avatar ai">🐱</div><div class="typing-bubble"><div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div></div>`;
+  chatArea.appendChild(row);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+function removeTyping() { const t = document.getElementById('typing-row'); if(t) t.remove(); }
+
+function renderHistList() {
+  histList.innerHTML = '';
+  histories.forEach(h => {
+    const el = document.createElement('div');
+    el.className = 'hist-item' + (h.id === currentId ? ' active' : '');
+    el.textContent = h.title;
+    el.onclick = () => selectHistory(h.id);
+    histList.appendChild(el);
+  });
+}
+
+function selectHistory(id) {
+  currentId = id;
+  const h = histories.find(x => x.id === id);
+  topTitle.textContent = h?.title || 'てのひら AI';
+  messages = [];
+  chatArea.innerHTML = '';
+  renderHistList();
+  if (window.innerWidth <= 768) closeSidebar();
+}
+
+function newChat() {
+  currentId = null;
+  messages = [];
+  topTitle.textContent = 'てのひら AI';
+  renderWelcome();
+  renderHistList();
+  if (window.innerWidth <= 768) closeSidebar();
+}
+
+function ask(text) {
+  mainInput.value = text;
+  send();
+}
+
+async function send(textOverride) {
+  const text = (textOverride || mainInput.value).trim();
+  if (!text || isLoading) return;
+
+  mainInput.value = '';
+  mainInput.style.height = 'auto';
+  isLoading = true;
+  sendBtn.disabled = true;
+
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  if (!currentId) {
+    const newId = Date.now();
+    currentId = newId;
+    const title = text.slice(0, 18);
+    histories.unshift({ id: newId, title });
+    topTitle.textContent = title;
+    renderHistList();
+  }
+
+  messages.push({ role: 'user', content: text });
+  addMsgEl('user', text, null);
+  addTyping();
+
+  try {
+    const intent = await detectIntent(text);
+    removeTyping();
+
+    if (intent.intent !== 'general' && intent.confidence >= 0.7) {
+      const main = APPS[intent.intent];
+      const cards = [
+        ...(main ? [{ ...main, primary: true }] : []),
+        ...Object.entries(APPS)
+          .filter(([k]) => k !== intent.intent)
+          .map(([, v]) => ({ ...v, primary: false })),
+      ];
+      addMsgEl('assistant', `「${text}」についてお手伝いできるアプリを見つけました。`, cards);
+      messages.push({ role: 'assistant', content: `「${text}」についてお手伝いできるアプリを見つけました。` });
+    } else {
+      addTyping();
+      const reply = await callWorker(messages, SYSTEM_PROMPT);
+      removeTyping();
+      addMsgEl('assistant', reply, null);
+      messages.push({ role: 'assistant', content: reply });
+    }
+  } catch {
+    removeTyping();
+    addMsgEl('assistant', 'エラーが発生しました。もう一度お試しください。', null);
+  } finally {
+    isLoading = false;
+    sendBtn.disabled = false;
+    mainInput.focus();
+  }
+}
+</script>
+</body>
+</html>
