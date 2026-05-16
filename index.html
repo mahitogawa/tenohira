@@ -25,7 +25,7 @@
   --ai-bubble:#ffffff;
   --shadow:0 2px 12px rgba(46,158,124,0.12);
 }
-html{font-size:17px;}
+html{font-size:19px;}
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Hiragino Sans',sans-serif;background:var(--bg);color:var(--text);}
 #app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:680px;margin:0 auto;position:relative;}
 
@@ -56,6 +56,16 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kak
   transition:background 0.2s;
 }
 #btn-settings:hover{background:rgba(255,255,255,0.35);}
+#btn-top{
+  background:rgba(255,255,255,0.2);
+  border:none;color:#fff;
+  border-radius:16px;padding:0 12px;height:36px;
+  font-size:0.8rem;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;
+  transition:background 0.2s;white-space:nowrap;
+  text-decoration:none;
+}
+#btn-top:hover{background:rgba(255,255,255,0.35);}
 
 /* チャットエリア */
 #chat-area{
@@ -71,16 +81,16 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kak
   text-align:center;padding:24px 16px 8px;
   animation:fadeIn 0.5s ease;
 }
-#welcome h2{font-size:1.15rem;color:var(--primary);font-weight:700;margin-bottom:6px;}
-#welcome p{font-size:0.88rem;color:var(--text-sub);line-height:1.6;margin-bottom:20px;}
-.quick-label{font-size:0.78rem;color:var(--text-sub);font-weight:600;margin-bottom:8px;align-self:flex-start;}
+#welcome h2{font-size:1.25rem;color:var(--primary);font-weight:700;margin-bottom:6px;}
+#welcome p{font-size:1rem;color:var(--text-sub);line-height:1.6;margin-bottom:20px;}
+.quick-label{font-size:0.88rem;color:var(--text-sub);font-weight:600;margin-bottom:8px;align-self:flex-start;}
 .quick-chips{display:flex;flex-direction:column;gap:10px;width:100%;}
 .chip{
   background:var(--surface);
   border:1.5px solid var(--border);
   border-radius:14px;
-  padding:14px 18px;
-  font-size:1rem;
+  padding:16px 18px;
+  font-size:1.05rem;
   color:var(--primary-dark);
   cursor:pointer;
   transition:all 0.2s;
@@ -235,6 +245,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kak
       <div class="title-main">てのひら福祉相談</div>
       <div class="title-sub">みんなのための福祉AIアシスタント</div>
     </div>
+    <a href="https://mahitogawa.github.io/tenohira/" id="btn-top">TOP</a>
     <button id="btn-settings" title="設定">⚙️</button>
   </div>
 
@@ -242,6 +253,35 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kak
   <div id="chat-area">
     <!-- ウェルカム -->
     <div id="welcome">
+      <div id="inline-profile" style="width:100%;background:var(--primary-light);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;">
+        <div style="font-size:0.88rem;font-weight:700;color:var(--text-sub);margin-bottom:12px;">👤 あなたの情報（任意）</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <select id="pf-hand2" onchange="syncProfile()" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:1rem;font-family:inherit;background:#fff;color:var(--text);outline:none;">
+            <option value="">障害・手帳の種類を選ぶ</option>
+            <option value="精神障害者保健福祉手帳">精神障害者保健福祉手帳</option>
+            <option value="身体障害者手帳">身体障害者手帳</option>
+            <option value="療育手帳">療育手帳（知的障害）</option>
+            <option value="複数の手帳">複数の手帳を所持</option>
+            <option value="手帳なし">手帳なし（申請検討中）</option>
+          </select>
+          <select id="pf-grade2" onchange="syncProfile()" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:1rem;font-family:inherit;background:#fff;color:var(--text);outline:none;">
+            <option value="">等級・程度を選ぶ</option>
+            <option value="1級">1級（最も重度）</option>
+            <option value="2級">2級</option>
+            <option value="3級">3級</option>
+            <option value="A判定">A判定（療育）</option>
+            <option value="B判定">B判定（療育）</option>
+          </select>
+          <select id="pf-age2" onchange="syncProfile()" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:1rem;font-family:inherit;background:#fff;color:var(--text);outline:none;">
+            <option value="">年齢を選ぶ</option>
+            <option value="20歳未満">20歳未満</option>
+            <option value="20〜39歳">20〜39歳</option>
+            <option value="40〜64歳">40〜64歳</option>
+            <option value="65歳以上">65歳以上</option>
+          </select>
+          <input id="pf-region2" type="text" placeholder="都道府県（例：愛知県）" onchange="syncProfile()" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:1rem;font-family:inherit;background:#fff;color:var(--text);outline:none;">
+        </div>
+      </div>
       <h2>なんでも聞いてね</h2>
       <p>福祉サービス・手当・申請のこと、<br>日常の困りごと、気軽に相談してください。</p>
       <div class="quick-label">よく聞かれること：</div>
@@ -327,12 +367,33 @@ let isLoading = false;
 function init() {
   try { chatHistory = JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch(e) { chatHistory = []; }
   try { profile = JSON.parse(localStorage.getItem(PROFILE_KEY)) || {}; } catch(e) { profile = {}; }
+  // モーダル側
   if (profile.hand) document.getElementById('pf-hand').value = profile.hand || '';
   if (profile.grade) document.getElementById('pf-grade').value = profile.grade || '';
   if (profile.age) document.getElementById('pf-age').value = profile.age || '';
   if (profile.region) document.getElementById('pf-region').value = profile.region || '';
+  // インライン側
+  if (profile.hand) document.getElementById('pf-hand2').value = profile.hand || '';
+  if (profile.grade) document.getElementById('pf-grade2').value = profile.grade || '';
+  if (profile.age) document.getElementById('pf-age2').value = profile.age || '';
+  if (profile.region) document.getElementById('pf-region2').value = profile.region || '';
   restoreHistory();
   setupInput();
+}
+
+function syncProfile() {
+  profile = {
+    hand: document.getElementById('pf-hand2').value,
+    grade: document.getElementById('pf-grade2').value,
+    age: document.getElementById('pf-age2').value,
+    region: document.getElementById('pf-region2').value
+  };
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  // モーダル側にも反映
+  document.getElementById('pf-hand').value = profile.hand || '';
+  document.getElementById('pf-grade').value = profile.grade || '';
+  document.getElementById('pf-age').value = profile.age || '';
+  document.getElementById('pf-region').value = profile.region || '';
 }
 
 function restoreHistory() {
