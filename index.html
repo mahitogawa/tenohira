@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#2e9e7c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -27,13 +27,14 @@
 }
 html{font-size:17px;}
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Hiragino Sans',sans-serif;background:var(--bg);color:var(--text);}
-#app{display:flex;flex-direction:column;height:100vh;max-width:680px;margin:0 auto;position:relative;}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:680px;margin:0 auto;position:relative;}
 
 /* ヘッダー */
 #header{
   background:var(--primary);
   color:#fff;
   padding:12px 16px;
+  padding-top:max(12px, env(safe-area-inset-top));
   display:flex;
   align-items:center;
   gap:10px;
@@ -42,6 +43,8 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kak
   position:sticky;top:0;z-index:10;
 }
 #header .logo{font-size:1.5rem;}
+#header .logo a{text-decoration:none;font-size:1.2rem;opacity:0.85;transition:opacity 0.2s;}
+#header .logo a:hover{opacity:1;}
 #header .title-block{flex:1;}
 #header .title-main{font-size:1.05rem;font-weight:700;letter-spacing:0.03em;}
 #header .title-sub{font-size:0.72rem;opacity:0.85;margin-top:1px;}
@@ -68,22 +71,22 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kak
   text-align:center;padding:24px 16px 8px;
   animation:fadeIn 0.5s ease;
 }
-#welcome .welcome-icon{font-size:3.2rem;margin-bottom:12px;}
 #welcome h2{font-size:1.15rem;color:var(--primary);font-weight:700;margin-bottom:6px;}
 #welcome p{font-size:0.88rem;color:var(--text-sub);line-height:1.6;margin-bottom:20px;}
 .quick-label{font-size:0.78rem;color:var(--text-sub);font-weight:600;margin-bottom:8px;align-self:flex-start;}
-.quick-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%;}
+.quick-chips{display:flex;flex-direction:column;gap:10px;width:100%;}
 .chip{
   background:var(--surface);
   border:1.5px solid var(--border);
-  border-radius:20px;
-  padding:10px 16px;
-  font-size:0.95rem;
+  border-radius:14px;
+  padding:14px 18px;
+  font-size:1rem;
   color:var(--primary-dark);
   cursor:pointer;
   transition:all 0.2s;
   line-height:1.4;
   text-align:left;
+  width:100%;
 }
 .chip:hover{background:var(--primary-light);border-color:var(--primary);transform:translateY(-1px);box-shadow:0 2px 8px rgba(46,158,124,0.2);}
 
@@ -141,6 +144,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kak
   background:var(--surface);
   border-top:1.5px solid var(--border);
   padding:10px 12px;
+  padding-bottom:max(10px, env(safe-area-inset-bottom));
   display:flex;gap:8px;align-items:flex-end;
   flex-shrink:0;
 }
@@ -226,7 +230,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kak
 <div id="app">
   <!-- ヘッダー -->
   <div id="header">
-    <div class="logo">🤲</div>
+    <div class="logo"><a href="https://mahitogawa.github.io/nyanlog/" title="にゃんログへ">🐱</a></div>
     <div class="title-block">
       <div class="title-main">てのひら福祉相談</div>
       <div class="title-sub">みんなのための福祉AIアシスタント</div>
@@ -238,22 +242,17 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kak
   <div id="chat-area">
     <!-- ウェルカム -->
     <div id="welcome">
-      <div class="welcome-icon">🤲</div>
       <h2>なんでも聞いてね</h2>
       <p>福祉サービス・手当・申請のこと、<br>日常の困りごと、気軽に相談してください。</p>
       <div class="quick-label">よく聞かれること：</div>
       <div class="quick-chips">
         <div class="chip" onclick="sendQuick('私が使える福祉サービスは何ですか？')">🔍 使える福祉サービスは？</div>
-        <div class="chip" onclick="sendQuick('障害者手帳でどんな特典がありますか？')">📗 手帳の特典を知りたい</div>
         <div class="chip" onclick="sendQuick('障害年金の申請方法を教えてください')">💴 障害年金の申請方法</div>
-        <div class="chip" onclick="sendQuick('自立支援医療とは何ですか？')">🏥 自立支援医療って？</div>
         <div class="chip" onclick="sendQuick('生活が苦しいです。使える制度はありますか？')">🙏 生活が苦しいとき</div>
-        <div class="chip" onclick="sendQuick('介護保険サービスについて教えてください')">🏠 介護保険について</div>
       </div>
     </div>
     <!-- タイピング -->
     <div id="typing">
-      <div class="msg-avatar" style="width:34px;height:34px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🤲</div>
       <div class="typing-dots">
         <div class="dot"></div><div class="dot"></div><div class="dot"></div>
       </div>
@@ -350,7 +349,7 @@ function appendMessage(role, text) {
   const area = document.getElementById('chat-area');
   const div = document.createElement('div');
   div.className = `msg ${role}`;
-  const avatar = role === 'ai' ? '🤲' : '🙂';
+  const avatar = role === 'ai' ? '' : '🙂';
   div.innerHTML = `<div class="msg-avatar">${avatar}</div><div class="msg-bubble">${formatText(text)}</div>`;
   area.insertBefore(div, typing);
   area.scrollTop = area.scrollHeight;
@@ -359,12 +358,9 @@ function appendMessage(role, text) {
 function formatText(text) {
   return text
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/**(.+?)**/g,'<strong>$1</strong>')
-    .replace(/
-
-/g,'</p><p>')
-    .replace(/
-/g,'<br>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/\n/g,'<br>')
     .replace(/^/,'<p>').replace(/$/,'</p>')
     .replace(/・/g,'<br>・');
 }
