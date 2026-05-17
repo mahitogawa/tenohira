@@ -148,7 +148,8 @@ button { cursor: pointer; font-family: inherit; }
 .del-btn:hover { color: var(--danger); background: var(--surface2); }
 
 #sb-footer { padding: 10px 8px; border-top: 0.5px solid var(--border); }
-#user-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; }
+#user-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
+#user-row:hover { background: var(--surface); }
 .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #fff; flex-shrink: 0; }
 #user-name { font-size: 18px; color: #777; flex: 1; }
 
@@ -190,6 +191,7 @@ button { cursor: pointer; font-family: inherit; }
   transition: all 0.2s;
   -webkit-tap-highlight-color: transparent;
 }
+.chip:hover { background: var(--surface2); border-color: var(--primary); color: var(--primary); }
 .chip:active { background: var(--surface2); border-color: var(--primary); color: var(--primary); }
 
 /* ===== メッセージ ===== */
@@ -221,15 +223,13 @@ button { cursor: pointer; font-family: inherit; }
 
 /* ===== タスク・通知パネル ===== */
 .panel-title { font-size: 28px; font-weight: 700; color: var(--primary); margin-bottom: 20px; }
-.panel-card { background: var(--surface); border: 1px solid var(--border2); padding: 20px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 14px; }
+.panel-card { background: var(--surface); border: 1px solid var(--border2); padding: 20px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 14px; width: 100%; }
 .panel-card-text { font-size: 22px; font-weight: 500; color: var(--text); flex: 1; line-height: 1.5; }
 .panel-btn { background: none; border: none; color: var(--text-sub); font-size: 24px; padding: 8px; border-radius: 6px; flex-shrink: 0; }
 .panel-btn:active { color: var(--danger); background: var(--surface2); }
 .panel-empty { color: var(--text-dim); font-size: 20px; padding: 24px 0; text-align: center; }
 
-.quick-link-title { font-size: 24px; font-weight: 700; color: var(--primary); margin: 28px 0 14px; }
-
-.add-box { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; max-width: 600px; }
+.add-box { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; }
 .add-input {
   flex: 1;
   background: var(--surface);
@@ -244,7 +244,7 @@ button { cursor: pointer; font-family: inherit; }
 .add-input:focus { border-color: var(--primary); }
 .add-submit { background: var(--primary); border: none; color: #fff; padding: 14px 24px; border-radius: 12px; font-size: 20px; font-weight: 700; font-family: inherit; }
 
-/* ===== 入力エリア（safe-area修正） ===== */
+/* ===== 入力エリア ===== */
 #input-area {
   padding: 12px 16px;
   padding-bottom: max(20px, env(safe-area-inset-bottom));
@@ -252,15 +252,100 @@ button { cursor: pointer; font-family: inherit; }
   flex-shrink: 0;
   background: var(--bg);
 }
-#input-wrap { background: var(--surface); border: 1px solid var(--border2); border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+#input-wrap { 
+  background: var(--surface); 
+  border: 1px solid var(--border2); 
+  border-radius: 18px; 
+  padding: 14px 16px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 14px;
+}
 #input-wrap:focus-within { border-color: var(--primary); }
-#main-input { background: none; border: none; outline: none; color: var(--text); font-size: 22px; font-family: inherit; resize: none; line-height: 1.6; width: 100%; max-height: 160px; overflow-y: auto; }
+
+#main-input { 
+  background: none; 
+  border: none; 
+  outline: none; 
+  color: var(--text); 
+  font-size: 22px; 
+  font-family: inherit; 
+  resize: none; 
+  line-height: 1.6; 
+  width: 100%; 
+  max-height: 140px; 
+  overflow-y: auto; 
+}
 #main-input::placeholder { color: #555; }
-#input-actions { display: flex; align-items: center; justify-content: space-between; }
-#input-left { display: flex; gap: 8px; align-items: center; }
-#input-model { background: var(--bg); border: 0.5px solid #333; border-radius: 10px; padding: 6px 14px; font-size: 15px; color: #555; }
-#send-btn { background: var(--primary); border: none; color: #fff; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 2px 8px var(--primary-glow); }
+
+#input-actions { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  min-height: 48px;
+}
+#input-left { 
+  display: flex; 
+  gap: 12px; 
+  align-items: center; 
+  flex: 1;
+}
+
+#btn-mic {
+  width: 44px;
+  height: 44px;
+  font-size: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#input-model-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 0.5px solid #3a3a3a;
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text-sub);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  height: 40px;
+}
+#input-model-btn:hover { border-color: var(--primary); color: var(--text); }
+
+#send-btn { 
+  background: var(--primary); 
+  border: none; 
+  color: #fff; 
+  width: 48px; 
+  height: 48px; 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 24px; 
+  box-shadow: 0 2px 8px var(--primary-glow); 
+  flex-shrink: 0;
+}
 #send-btn:disabled { background: var(--surface2); cursor: not-allowed; color: #555; box-shadow: none; }
+
+/* ===== 設定画面 ===== */
+.settings-box { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 650px; margin: 0 auto; padding-bottom: 40px; }
+.setting-group { background: var(--surface); border: 1px solid var(--border2); padding: 16px; border-radius: 14px; display: flex; flex-direction: column; gap: 8px; }
+.setting-label { font-size: 18px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 6px; }
+.setting-desc { font-size: 14px; color: var(--text-sub); }
+.setting-field { background: var(--bg); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); padding: 10px 12px; font-size: 18px; outline: none; width: 100%; font-family: inherit; }
+.setting-field:focus { border-color: var(--primary); }
+.setting-row { display: flex; gap: 12px; align-items: center; }
+.setting-select { background: var(--bg); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); padding: 10px; font-size: 18px; outline: none; font-family: inherit; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -276,19 +361,23 @@ button { cursor: pointer; font-family: inherit; }
       <div class="nav-click-area" onclick="switchNav('chat')">💬 チャット</div>
       <button class="add-chat-btn" onclick="newChat()" title="新規チャット">＋</button>
     </div>
-    <div class="nav-item" id="nav-project" onclick="switchNav('project')">
+    <div class="nav-item" id="nav-project">
       <div class="nav-click-area" onclick="switchNav('project')">📁 タスク/計画</div>
     </div>
-    <div class="nav-item" id="nav-notify" onclick="switchNav('notify')">
+    <div class="nav-item" id="nav-notify">
       <div class="nav-click-area" onclick="switchNav('notify')">🔔 通知板</div>
+    </div>
+    <div class="nav-item" id="nav-settings">
+      <div class="nav-click-area" onclick="switchNav('settings')">⚙️ 設定</div>
     </div>
   </div>
   <div class="section-label">最近の会話</div>
   <div id="hist-list"></div>
   <div id="sb-footer">
-    <div id="user-row">
-      <div class="user-avatar">M</div>
+    <div id="user-row" onclick="switchNav('settings')" title="設定を開く">
+      <div class="user-avatar" id="avatar-char">M</div>
       <div id="user-name">mahitogawa</div>
+      <span style="color:var(--text-dim);font-size:18px;">⚙️</span>
     </div>
   </div>
 </div>
@@ -306,7 +395,7 @@ button { cursor: pointer; font-family: inherit; }
       <div id="input-actions">
         <div id="input-left">
           <button class="icon-btn" id="btn-mic" title="音声入力">🎤</button>
-          <div id="input-model">TENOHIRA AI</div>
+          <div id="input-model-btn" onclick="switchNav('settings')" title="アプリ設定を開く">⚙️ TENOHIRA AI</div>
         </div>
         <button id="send-btn" onclick="send()" title="送信">➤</button>
       </div>
@@ -315,7 +404,27 @@ button { cursor: pointer; font-family: inherit; }
 </div>
 
 <script>
-const WORKER_URL = 'https://tenohira.mahito-ai.workers.dev';
+// ===== JavaScript（動く仕組み）ここから完全大復活だにゃ！ =====
+let config = JSON.parse(localStorage.getItem('TENOHIRA_config')) || {
+  userName: 'mahitogawa',
+  workerUrl: 'https://tenohira.mahito-ai.workers.dev',
+  cat1Msg: '🐱 マーニャ「Mahito、今日ものんびり一歩ずつ進めば大丈夫にゃ〜」',
+  cat2Msg: '🐱 アイ「根を詰めすぎちゃダメにゃ。疲れたらあたしを撫でて休むにゃ！」',
+  systemPrompt: 'あなたは「TENOHIRA AI」です。脳梗塞回復中のユーザーを支援する、やさしい伴走AIです。\\nブレインフォグがあるため：一度に1つだけ質問する、短く簡潔に、やさしい言葉で。',
+  themeColor: '#2e9e7c',
+  fontSize: '24px'
+};
+
+function applyConfig() {
+  document.documentElement.style.setProperty('--primary', config.themeColor);
+  document.documentElement.style.setProperty('--primary-glow', config.themeColor + '33');
+  document.documentElement.style.fontSize = config.fontSize;
+  
+  const nameEl = document.getElementById('user-name');
+  if (nameEl) nameEl.textContent = config.userName;
+  const avatarEl = document.getElementById('avatar-char');
+  if (avatarEl && config.userName) avatarEl.textContent = config.userName.charAt(0).toUpperCase();
+}
 
 const APPS = {
   moushitate: { icon:'📝', title:'障害年金 申立書AI',  desc:'聞き取りながら障害年金の申立書を一緒に作ります', url:'https://mahitogawa.github.io/ai/moushitate-ai.html' },
@@ -325,50 +434,12 @@ const APPS = {
   passport:   { icon:'📚', title:'生成AIパスポート対策', desc:'462問の練習問題でAI資格試験を準備します', url:'https://mahitogawa.github.io/ai/' },
 };
 
-// ===== STATE MACHINE =====
-// domain: nenkin | fukushi | health | daily | general | null
-// state:  initial → hearing → record → workflow
-// urgency: high | normal | low
-// emotion: distressed | neutral | positive
-
 function newSession() {
-  return {
-    id: Date.now(),
-    domain: null,
-    state: 'initial',
-    urgency: 'normal',
-    emotion: 'neutral',
-    context: {},
-    history: [],
-  };
+  return { id: Date.now(), domain: null, state: 'initial', urgency: 'normal', emotion: 'neutral', context: {}, history: [] };
 }
 
-// AI① 意図判定プロンプト
 const ROUTER_SYSTEM = `あなたはAI Routerです。ユーザーの発言を分析してJSONのみを返してください。
-
-【domain】
-- nenkin: 障害年金、申立書、年金申請
-- fukushi: 福祉サービス、手当、制度、申請
-- health: 体調、症状、こころ、お薬
-- daily: 日常生活、記録、日記
-- general: その他
-
-【state遷移ルール】
-- initial → hearing: domainが判明したとき
-- hearing → record: 必要情報（3つ以上）が揃ったとき
-- record → workflow: ユーザーが確認OKしたとき
-
-【urgency】
-- high: 今すぐ助けが必要、緊急
-- normal: 通常
-- low: 情報収集、調べたいだけ
-
-【emotion】
-- distressed: 不安・辛い・困っている
-- neutral: 普通
-- positive: 前向き・元気
-
-必ずJSONのみ返してください（他の文字は不要）:
+必ずJSONのみ返してください:
 {
   "domain": "nenkin|fukushi|health|daily|general",
   "state": "initial|hearing|record|workflow",
@@ -378,39 +449,10 @@ const ROUTER_SYSTEM = `あなたはAI Routerです。ユーザーの発言を分
   "ready_for_workflow": false
 }`;
 
-// AI② 実行AIプロンプト（state別）
 function buildExecutorPrompt(session) {
-  const base = `あなたは「TENOHIRA AI」です。脳梗塞回復中のユーザーを支援する、やさしい伴走AIです。
-ブレインフォグがあるため：一度に1つだけ質問する、短く簡潔に、やさしい言葉で。
-
-現在の状態：
-- domain: ${session.domain || '未確定'}
-- state: ${session.state}
-- urgency: ${session.urgency}
-- emotion: ${session.emotion}
-- 収集済み情報: ${JSON.stringify(session.context)}
-`;
-
-  const stateGuide = {
-    initial: `【initial】まず相手の状況を大まかに把握する。何に困っているか1つだけ質問する。`,
-    hearing: `【hearing】必要な情報を1つずつ聞き取る。domainに応じて：
-- nenkin: 傷病名・認定日・就労状況・日常生活の困難
-- fukushi: 手帳の種類・等級・住まいの地域・困っていること
-- health: 症状・いつから・受診状況
-- daily: 今日の気分・体調・記録したいこと
-情報が揃ってきたら「確認させてください」と言って recordへ促す。`,
-    record: `【record】収集した情報をやさしくまとめて確認する。
-「〇〇ということで合っていますか？」と聞く。
-OKなら次のステップに進む旨を伝える。`,
-    workflow: `【workflow】次のアクションをやさしく案内する。
-適切なアプリやサービスを1〜2個だけ提案する。
-押しつけず「よかったら使ってみてね」のトーンで。`,
-  };
-
-  return base + '\n' + (stateGuide[session.state] || stateGuide.initial);
+  return config.systemPrompt + `\\n\\n現在の状態：\\n- domain: ${session.domain || '未確定'}\\n- state: ${session.state}\\n- 収集済み情報: ${JSON.stringify(session.context)}`;
 }
 
-// ===== アプリ状態 =====
 let currentMenu = 'chat';
 let histories = JSON.parse(localStorage.getItem('TENOHIRA_histories')) || [];
 let currentId = null;
@@ -421,11 +463,15 @@ let myTasks = JSON.parse(localStorage.getItem('TENOHIRA_tasks')) || [
   { id: 1, text: '📝 障害年金 申立書の作成' },
   { id: 2, text: '🐱 毎日のにゃんログ健康記録' },
 ];
-let myNotifies = JSON.parse(localStorage.getItem('TENOHIRA_notifies')) || [
-  { id: 1, type: 'schedule', text: '📅 5月20日頃：訪問診療の先生が来るリマインドだにゃ！' },
-  { id: 2, type: 'cat1',     text: '🐱 マーニャ「Mahito、今日ものんびり一歩ずつ進めば大丈夫にゃ〜」' },
-  { id: 3, type: 'cat2',     text: '🐱 アイ「根を詰めすぎちゃダメにゃ。疲れたらあたしを撫でて休むにゃ！」' },
-];
+
+function getNotifies() {
+  return JSON.parse(localStorage.getItem('TENOHIRA_notifies')) || [
+    { id: 1, type: 'schedule', text: '📅 5月20日頃：訪問診療の先生が来るリマインドだにゃ！' },
+    { id: 2, type: 'cat1',     text: config.cat1Msg },
+    { id: 3, type: 'cat2',     text: config.cat2Msg },
+  ];
+}
+let myNotifies = getNotifies();
 
 const chatArea   = document.getElementById('chat-area');
 const mainInput  = document.getElementById('main-input');
@@ -436,17 +482,18 @@ const sidebar    = document.getElementById('sidebar');
 const overlay    = document.getElementById('overlay');
 const inputArea  = document.getElementById('input-area');
 
-// 安全に起動
+// 初期起動
 try {
+  applyConfig();
   renderHistList();
   renderWelcome();
 } catch(e) {
-  console.warn('Init error:', e);
   localStorage.removeItem('TENOHIRA_histories');
   histories = [];
   renderWelcome();
 }
 
+// テキストエリア自動伸縮
 mainInput.addEventListener('input', () => {
   mainInput.style.height = 'auto';
   mainInput.style.height = Math.min(mainInput.scrollHeight, 140) + 'px';
@@ -455,204 +502,121 @@ mainInput.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
 });
 
-// ===== API =====
 async function callWorker(messages, system) {
   const body = system ? { system, messages } : { messages };
-  const res = await fetch(WORKER_URL, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
+  const res = await fetch(config.workerUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   const data = await res.json();
   return data.content?.map(c => c.text || '').join('') || '';
 }
 
-// ===== AI Router（AI①）=====
 async function runRouter(text) {
   try {
-    const msgs = [
-      ...currentSession.history.slice(-4),
-      { role: 'user', content: text },
-    ];
+    const msgs = [...currentSession.history.slice(-4), { role: 'user', content: text }];
     const raw = await callWorker(msgs, ROUTER_SYSTEM);
     const clean = raw.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
-
-    // sessionを更新
-    if (parsed.domain)   currentSession.domain  = parsed.domain;
-    if (parsed.urgency)  currentSession.urgency  = parsed.urgency;
-    if (parsed.emotion)  currentSession.emotion  = parsed.emotion;
-    if (parsed.collected && Object.keys(parsed.collected).length > 0) {
-      currentSession.context = { ...currentSession.context, ...parsed.collected };
-    }
-
-    // state遷移
+    if (parsed.domain) currentSession.domain = parsed.domain;
     if (parsed.state) currentSession.state = parsed.state;
-    if (parsed.ready_for_workflow) currentSession.state = 'workflow';
-
     return parsed;
   } catch {
     return { domain: currentSession.domain, state: currentSession.state };
   }
 }
 
-// ===== AI Executor（AI②）=====
 async function runExecutor(text) {
   const systemPrompt = buildExecutorPrompt(currentSession);
-  const msgs = [
-    ...currentSession.history.slice(-8),
-    { role: 'user', content: text },
-  ];
+  const msgs = [...currentSession.history.slice(-8), { role: 'user', content: text }];
   return await callWorker(msgs, systemPrompt);
 }
 
-// ===== workflow カード表示 =====
 function showWorkflowCards(domain) {
-  const domainApps = {
-    nenkin:  ['moushitate', 'tenohira'],
-    fukushi: ['tenohira', 'moushitate'],
-    health:  ['mental', 'nyanlog'],
-    daily:   ['nyanlog', 'tenohira'],
-    general: ['tenohira', 'nyanlog'],
-  };
+  const domainApps = { nenkin: ['moushitate', 'tenohira'], fukushi: ['tenohira', 'moushitate'], health: ['mental', 'nyanlog'], daily: ['nyanlog', 'tenohira'] };
   const keys = domainApps[domain] || ['tenohira', 'nyanlog'];
   const list = document.createElement('div');
   list.className = 'card-list';
   keys.forEach((k, i) => {
-    const app = APPS[k];
-    if (!app) return;
-    const a = document.createElement('a');
-    a.className = 'app-card' + (i === 0 ? ' primary' : '');
-    a.href = app.url; a.target = '_blank';
-    a.innerHTML = `<div class="card-icon">${app.icon}</div>
-      <div class="card-body">
-        <div class="card-title">${app.title}</div>
-        <div class="card-desc">${app.desc}</div>
-      </div>
-      <div class="card-arrow">›</div>`;
+    const app = APPS[k]; if (!app) return;
+    const a = document.createElement('a'); a.className = 'app-card' + (i === 0 ? ' primary' : ''); a.href = app.url; a.target = '_blank';
+    a.innerHTML = `<div class="card-icon">${app.icon}</div><div class="card-body"><div class="card-title">${app.title}</div><div class="card-desc">${app.desc}</div></div><div class="card-arrow">›</div>`;
     list.appendChild(a);
   });
-  chatArea.appendChild(list);
-  chatArea.scrollTop = chatArea.scrollHeight;
+  chatArea.appendChild(list); chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-// ===== state badge =====
 function updateStateBadge() {
-  const badge = document.getElementById('model-badge');
-  if (!badge) return;
-  const labels = {
-    initial:  '🔍 initial',
-    hearing:  '👂 hearing',
-    record:   '📋 record',
-    workflow: '🚀 workflow',
-  };
+  const badge = document.getElementById('model-badge'); if (!badge) return;
+  const labels = { initial: '🔍 initial', hearing: '👂 hearing', record: '📋 record', workflow: '🚀 workflow' };
   badge.textContent = labels[currentSession.state] || '✨ AI';
 }
 
-// ===== メイン送信 =====
 async function send(textOverride) {
-  const text = (textOverride || mainInput.value).trim();
-  if (!text || isLoading) return;
-
-  mainInput.value = ''; mainInput.style.height = 'auto';
+  const text = (textOverride || mainInput.value).trim(); if (!text || isLoading) return;
+  if (!textOverride) { mainInput.value = ''; mainInput.style.height = 'auto'; }
   isLoading = true; sendBtn.disabled = true;
-
   const welcome = document.getElementById('welcome'); if (welcome) welcome.remove();
 
-  // 新規チャット
   if (!currentId) {
-    const newId = Date.now(); currentId = newId;
-    const title = text.slice(0, 18);
+    const newId = Date.now(); currentId = newId; const title = text.slice(0, 18);
     histories.unshift({ id: newId, title, msgs: [], session: newSession() });
-    topTitle.textContent = title;
-    currentSession = histories[0].session;
+    topTitle.textContent = title; currentSession = histories[0].session;
   }
 
   const currentChat = histories.find(x => x.id === currentId);
-  addMsgEl('user', text);
-  addTyping();
+  if (!currentChat) { isLoading = false; sendBtn.disabled = false; return; }
+  addMsgEl('user', text); addTyping();
 
   try {
-    // AI①：意図判定（非同期で並行）
-    const [routerResult, reply] = await Promise.all([
-      runRouter(text),
-      runExecutor(text),
-    ]);
-
-    removeTyping();
-    updateStateBadge();
-
-    // 会話履歴に追加
-    currentSession.history.push({ role: 'user', content: text });
-    currentSession.history.push({ role: 'assistant', content: reply });
-    currentChat.msgs = currentSession.history;
-    currentChat.session = currentSession;
-    saveToStorage(); renderHistList();
-
-    addMsgEl('assistant', reply);
-
-    // workflow状態になったらカードを表示
-    if (currentSession.state === 'workflow') {
-      setTimeout(() => showWorkflowCards(currentSession.domain), 300);
-    }
-
+    const [routerResult, reply] = await Promise.all([runRouter(text), runExecutor(text)]);
+    removeTyping(); updateStateBadge();
+    currentSession.history.push({ role: 'user', content: text }, { role: 'assistant', content: reply });
+    currentChat.msgs = currentSession.history; currentChat.session = currentSession;
+    saveToStorage(); renderHistList(); addMsgEl('assistant', reply);
+    if (currentSession.state === 'workflow') setTimeout(() => showWorkflowCards(currentSession.domain), 300);
   } catch (err) {
-    console.error(err); removeTyping();
-    addMsgEl('assistant', '通信エラーが起きたからもう一度試してみてね。');
+    removeTyping(); addMsgEl('assistant', '通信エラーが起きたからもう一度試してみてね。');
   } finally {
     isLoading = false; sendBtn.disabled = false; mainInput.focus();
   }
 }
 
-// ===== UI =====
 function toggleSidebar() { sidebar.classList.toggle('open'); overlay.classList.toggle('show'); }
 function closeSidebar()   { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
 function saveToStorage()  { localStorage.setItem('TENOHIRA_histories', JSON.stringify(histories)); }
 
+// メニュー切り替えの大事な仕組みだにゃ
 function switchNav(type) {
   currentMenu = type;
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  document.getElementById(`nav-${type}`).classList.add('active');
+  
+  const navEl = document.getElementById(`nav-${type}`);
+  if (navEl) navEl.classList.add('active');
+
   if (type === 'chat') {
-    inputArea.style.display = 'block';
-    if (currentId) { selectHistory(currentId); } else { renderWelcome(); }
+    inputArea.style.display = 'block'; if (currentId) { selectHistory(currentId); } else { renderWelcome(); }
   } else if (type === 'project') {
-    inputArea.style.display = 'none';
-    topTitle.textContent = '📁 タスク・進行中計画';
-    renderProjects();
+    inputArea.style.display = 'none'; topTitle.textContent = '📁 タスク・進行中計画'; renderProjects();
   } else if (type === 'notify') {
-    inputArea.style.display = 'none';
-    topTitle.textContent = '🔔 通知・お知らせボード';
-    renderNotifications();
+    inputArea.style.display = 'none'; topTitle.textContent = '🔔 通知・お知らせボード'; renderNotifications();
+  } else if (type === 'settings') {
+    inputArea.style.display = 'none'; topTitle.textContent = '⚙️ アプリ設定'; renderSettings();
   }
   if (window.innerWidth <= 768) closeSidebar();
 }
 
+function newChat() { currentId = null; currentSession = newSession(); switchNav('chat'); }
+
 function renderWelcome() {
-  chatArea.innerHTML = `
-    <div id="welcome">
-      <div id="welcome-logo">🐱</div>
-      <div id="welcome-title">なんでも話しかけてにゃ</div>
-      <div id="welcome-sub">福祉・障害年金・気分記録など<br>AIがあなたに必要なものを見つけます</div>
-      <div id="chips">
-        <div class="chip" onclick="ask('障害年金を申請したい')">💴 障害年金</div>
-        <div class="chip" onclick="ask('福祉サービスを調べたい')">🤲 福祉相談</div>
-        <div class="chip" onclick="ask('今日の気分を記録したい')">🐱 気分記録</div>
-      </div>
-    </div>`;
+  chatArea.innerHTML = `<div id="welcome"><div id="welcome-logo">🐱</div><div id="welcome-title">なんでも話しかけてにゃ</div><div id="welcome-sub">福祉・障害年金・気分記録など<br>AIがあなたに必要なものを見つけます</div><div id="chips"><div class="chip" onclick="ask('障害年金を申請したい')">💴 障害年金</div><div class="chip" onclick="ask('福祉サービスを調べたい')">🤲 福祉相談</div><div class="chip" onclick="ask('今日の気分を記録したい')">🐱 気分記録</div></div></div>`;
   updateStateBadge();
 }
 
-function ask(text) { mainInput.value = text; send(); }
+function ask(text) { send(text); }
 
 function addMsgEl(role, content) {
   const row = document.createElement('div'); row.className = 'msg-row ' + role;
-  const avatar = document.createElement('div'); avatar.className = 'msg-avatar ' + role;
-  avatar.textContent = role === 'user' ? '😊' : '🐱';
-  const right = document.createElement('div');
-  const bubble = document.createElement('div'); bubble.className = 'msg-bubble ' + role;
-  bubble.textContent = content;
-  right.appendChild(bubble); row.appendChild(avatar); row.appendChild(right);
-  chatArea.appendChild(row); chatArea.scrollTop = chatArea.scrollHeight;
+  const avatar = document.createElement('div'); avatar.className = 'msg-avatar ' + role; avatar.textContent = role === 'user' ? '😊' : '🐱';
+  const bubble = document.createElement('div'); bubble.className = 'msg-bubble ' + role; bubble.textContent = content;
+  row.appendChild(avatar); row.appendChild(bubble); chatArea.appendChild(row); chatArea.scrollTop = chatArea.scrollHeight;
 }
 
 function addTyping() {
@@ -665,141 +629,124 @@ function removeTyping() { const t = document.getElementById('typing-row'); if(t)
 function renderHistList() {
   histList.innerHTML = '';
   histories.forEach(h => {
-    const el = document.createElement('div');
-    el.className = 'hist-item' + (h.id === currentId && currentMenu === 'chat' ? ' active' : '');
-    const txtSpan = document.createElement('span');
-    txtSpan.className = 'hist-txt'; txtSpan.textContent = h.title;
-    txtSpan.onclick = () => { switchNav('chat'); selectHistory(h.id); };
-    const delBtn = document.createElement('button');
-    delBtn.className = 'del-btn'; delBtn.innerHTML = '🗑️';
-    delBtn.onclick = (e) => { e.stopPropagation(); deleteHistory(h.id); };
-    el.appendChild(txtSpan); el.appendChild(delBtn);
-    histList.appendChild(el);
+    const el = document.createElement('div'); el.className = 'hist-item' + (h.id === currentId && currentMenu === 'chat' ? ' active' : '');
+    const txtSpan = document.createElement('span'); txtSpan.className = 'hist-txt'; txtSpan.textContent = h.title; txtSpan.onclick = () => { switchNav('chat'); selectHistory(h.id); };
+    const delBtn = document.createElement('button'); delBtn.className = 'del-btn'; delBtn.innerHTML = '🗑️'; delBtn.onclick = (e) => { e.stopPropagation(); deleteHistory(h.id); };
+    el.appendChild(txtSpan); el.appendChild(delBtn); histList.appendChild(el);
   });
 }
 
 function deleteHistory(id) {
   if (!confirm('この会話履歴を完全に削除してもよろしいですか？')) return;
-  histories = histories.filter(x => x.id !== id); saveToStorage();
-  if (currentId === id) newChat(); else renderHistList();
+  histories = histories.filter(x => x.id !== id); saveToStorage(); if (currentId === id) newChat(); else renderHistList();
 }
 
 function selectHistory(id) {
   try {
-    currentId = id;
-    const h = histories.find(x => x.id === id);
-    topTitle.textContent = h?.title || 'TENOHIRA AI';
+    currentId = id; const h = histories.find(x => x.id === id); topTitle.textContent = h?.title || 'TENOHIRA AI';
     currentSession = (h?.session && h.session.state) ? h.session : newSession();
-    chatArea.innerHTML = '';
-    renderHistList();
-    updateStateBadge();
+    chatArea.innerHTML = ''; renderHistList(); updateStateBadge();
     if (h && Array.isArray(h.msgs) && h.msgs.length > 0) {
       h.msgs.forEach(m => { if (m.role && m.content) addMsgEl(m.role, m.content); });
       if (currentSession.state === 'workflow') showWorkflowCards(currentSession.domain);
-    } else {
-      renderWelcome();
-    }
-  } catch(e) {
-    console.warn('selectHistory error:', e);
-    renderWelcome();
-  }
+    } else { renderWelcome(); }
+  } catch(e) { renderWelcome(); }
 }
 
-function newChat() {
-  currentId = null; currentSession = newSession();
-  topTitle.textContent = 'TENOHIRA AI';
-  currentMenu = 'chat';
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  document.getElementById('nav-chat').classList.add('active');
-  inputArea.style.display = 'block';
-  renderWelcome(); renderHistList();
-  if (window.innerWidth <= 768) closeSidebar();
-}
-
-// ===== タスク・通知 =====
+// タスク画面の描画
 function renderProjects() {
-  let listHtml = '';
-  myTasks.forEach(t => {
-    listHtml += `<div class="panel-card">
-      <div class="panel-card-text">${t.text}</div>
-      <button class="panel-btn" onclick="deleteTask(${t.id})">🗑️</button>
-    </div>`;
-  });
-  chatArea.innerHTML = `
-    <div style="display:flex;flex-direction:column;width:100%;max-width:700px;margin:0 auto;">
-      <div class="panel-title">📁 タスク・進行中計画</div>
-      <div class="add-box">
-        <input type="text" id="task-input" class="add-input" placeholder="新しいタスクを入力...">
-        <button class="add-submit" onclick="addTask()">追加</button>
-      </div>
-      ${listHtml || '<div class="panel-empty">タスクはありません🐱</div>'}
-      <div class="quick-link-title">🚀 クイックリンク</div>
-      <div class="card-list" style="max-width:100%;">
-        <a class="app-card primary" href="${APPS.moushitate.url}" target="_blank">
-          <div class="card-icon">📝</div>
-          <div class="card-body"><div class="card-title">障害年金 申立書AIを開く</div></div>
-          <div class="card-arrow">›</div>
-        </a>
-        <a class="app-card" href="${APPS.nyanlog.url}" target="_blank">
-          <div class="card-icon">🐱</div>
-          <div class="card-body"><div class="card-title">にゃんログ健康記録を開く</div></div>
-          <div class="card-arrow">›</div>
-        </a>
-      </div>
-    </div>`;
+  let listHtml = ''; myTasks.forEach(t => { listHtml += `<div class="panel-card"><div class="panel-card-text">${t.text}</div><button class="panel-btn" onclick="deleteTask(${t.id})">🗑️</button></div>`; });
+  chatArea.innerHTML = `<div style="display:flex;flex-direction:column;width:100%;max-width:700px;margin:0 auto;"><div class="panel-title">📁 タスク・進行中計画</div><div class="add-box"><input type="text" id="task-input" class="add-input" placeholder="新しいタスクを入力..."><button class="add-submit" onclick="addTask()">追加</button></div>${listHtml || '<div class="panel-empty">タスクはありません🐱</div>'}</div>`;
 }
-
 function addTask() {
-  const inp = document.getElementById('task-input');
-  if (!inp.value.trim()) return;
-  myTasks.push({ id: Date.now(), text: inp.value.trim() });
-  localStorage.setItem('TENOHIRA_tasks', JSON.stringify(myTasks));
-  renderProjects();
+  const inp = document.getElementById('task-input'); if (!inp.value.trim()) return;
+  myTasks.push({ id: Date.now(), text: inp.value.trim() }); localStorage.setItem('TENOHIRA_tasks', JSON.stringify(myTasks)); renderProjects();
 }
 function deleteTask(id) {
-  myTasks = myTasks.filter(t => t.id !== id);
-  localStorage.setItem('TENOHIRA_tasks', JSON.stringify(myTasks));
-  renderProjects();
+  myTasks = myTasks.filter(t => t.id !== id); localStorage.setItem('TENOHIRA_tasks', JSON.stringify(myTasks)); renderProjects();
 }
 
+// 通知画面の描画
 function renderNotifications() {
+  myNotifies = JSON.parse(localStorage.getItem('TENOHIRA_notifies')) || getNotifies();
   let listHtml = '';
   myNotifies.forEach(n => {
     const color = n.type === 'schedule' ? '#e0a82e' : (n.type === 'cat1' ? 'var(--primary)' : '#a855f7');
-    listHtml += `<div class="panel-card" style="border-left:5px solid ${color};">
-      <div class="panel-card-text">${n.text}</div>
-      <button class="panel-btn" onclick="deleteNotify(${n.id})">❌</button>
-    </div>`;
+    listHtml += `<div class="panel-card" style="border-left:5px solid ${color};"><div class="panel-card-text">${n.text}</div><button class="panel-btn" onclick="deleteNotify(${n.id})">❌</button></div>`;
   });
+  chatArea.innerHTML = `<div style="display:flex;flex-direction:column;width:100%;max-width:700px;margin:0 auto;"><div class="panel-title">🔔 お知らせボード</div>${listHtml || '<div class="panel-empty">新しい通知はありません🐾</div>'}</div>`;
+}
+function deleteNotify(id) {
+  let stored = myNotifies.filter(n => n.id !== id);
+  myNotifies = stored;
+  localStorage.setItem('TENOHIRA_notifies', JSON.stringify(stored)); renderNotifications();
+}
+
+// 設定画面の描画
+function renderSettings() {
   chatArea.innerHTML = `
-    <div style="display:flex;flex-direction:column;width:100%;max-width:700px;margin:0 auto;">
-      <div class="panel-title">🔔 お知らせボード</div>
-      ${listHtml || '<div class="panel-empty">新しい通知はありません。平和だにゃ🐾</div>'}
+    <div class="settings-box">
+      <div class="panel-title">⚙️ アプリ設定（フル版）</div>
+      <div class="setting-group"><div class="setting-label">👤 ユーザー名</div><input type="text" id="cfg-username" class="setting-field" value="${config.userName}"></div>
+      <div class="setting-group"><div class="setting-label">🔗 Workers AI URL</div><input type="text" id="cfg-workerurl" class="setting-field" value="${config.workerUrl}"></div>
+      <div class="setting-group"><div class="setting-label">🐱 マーニャのメッセージ</div><input type="text" id="cfg-cat1msg" class="setting-field" value="${config.cat1Msg}"></div>
+      <div class="setting-group"><div class="setting-label">🐱 アイのメッセージ</div><input type="text" id="cfg-cat2msg" class="setting-field" value="${config.cat2Msg}"></div>
+      <div class="setting-group"><div class="setting-label">🧠 AIシステムプロンプト</div><textarea id="cfg-sysprompt" class="setting-field" rows="4">${config.systemPrompt}</textarea></div>
+      <div class="setting-group">
+        <div class="setting-label">🎨 テーマカラー</div>
+        <div class="setting-row">
+          <input type="color" id="cfg-themecolor" value="${config.themeColor}" style="width:50px; height:40px; border:none; cursor:pointer;">
+          <select id="cfg-themepreset" class="setting-select" onchange="document.getElementById('cfg-themecolor').value = this.value">
+            <option value="#2e9e7c">エメラルド（標準）</option><option value="#e0a82e">ゴールド</option><option value="#3b82f6">ブルー</option><option value="#a855f7">パープル</option>
+          </select>
+        </div>
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">🔎 文字サイズ</div>
+        <select id="cfg-fontsize" class="setting-select">
+          <option value="20px" ${config.fontSize==='20px'?'selected':''}>小さめ</option><option value="24px" ${config.fontSize==='24px'?'selected':''}>標準</option><option value="28px" ${config.fontSize==='28px'?'selected':''}>大きめ</option><option value="32px" ${config.fontSize==='32px'?'selected':''}>特大</option>
+        </select>
+      </div>
+      <button class="add-submit" style="width:100%; margin-top:10px;" onclick="saveConfig()">設定を保存して適用するにゃ🐾</button>
     </div>`;
 }
 
-function deleteNotify(id) {
-  myNotifies = myNotifies.filter(n => n.id !== id);
-  localStorage.setItem('TENOHIRA_notifies', JSON.stringify(myNotifies));
-  renderNotifications();
+function saveConfig() {
+  config.userName = document.getElementById('cfg-username').value.trim();
+  config.workerUrl = document.getElementById('cfg-workerurl').value.trim();
+  config.cat1Msg = document.getElementById('cfg-cat1msg').value.trim();
+  config.cat2Msg = document.getElementById('cfg-cat2msg').value.trim();
+  config.systemPrompt = document.getElementById('cfg-sysprompt').value;
+  config.themeColor = document.getElementById('cfg-themecolor').value;
+  config.fontSize = document.getElementById('cfg-fontsize').value;
+  localStorage.setItem('TENOHIRA_config', JSON.stringify(config));
+  
+  let storedNotifies = JSON.parse(localStorage.getItem('TENOHIRA_notifies'));
+  if (storedNotifies) {
+    storedNotifies = storedNotifies.map(n => {
+      if (n.type === 'cat1') n.text = config.cat1Msg;
+      if (n.type === 'cat2') n.text = config.cat2Msg;
+      return n;
+    });
+    localStorage.setItem('TENOHIRA_notifies', JSON.stringify(storedNotifies));
+  }
+  
+  applyConfig(); 
+  renderHistList();
+  alert('設定を保存したにゃ！画面全体に新設定が適用されたよ🐾'); switchNav('chat');
 }
 
-// ===== 音声入力 =====
+// 音声入力の仕組み
 const btnMic = document.getElementById('btn-mic');
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const rec = new SR();
   rec.lang = 'ja-JP'; rec.continuous = false; rec.interimResults = false;
-  rec.onresult = e => {
-    mainInput.value = e.results[0][0].transcript;
-    btnMic.textContent = '🎤'; send();
-  };
+  rec.onresult = e => { mainInput.value = e.results[0][0].transcript; btnMic.textContent = '🎤'; send(); };
   rec.onend = () => btnMic.textContent = '🎤';
-  btnMic.addEventListener('click', () => {
-    if (btnMic.textContent === '🔴') { rec.stop(); btnMic.textContent = '🎤'; }
-    else { btnMic.textContent = '🔴'; rec.start(); }
-  });
-} else { btnMic.style.display = 'none'; }
+  rec.onerror = () => btnMic.textContent = '🎤';
+  btnMic.addEventListener('click', () => { if (btnMic.textContent === '🎤') { rec.start(); btnMic.textContent = '🛑'; } else { rec.stop(); btnMic.textContent = '🎤'; } });
+}
 </script>
 </body>
 </html>
