@@ -337,6 +337,29 @@ button { cursor: pointer; font-family: inherit; }
 }
 #send-btn:disabled { background: var(--surface2); cursor: not-allowed; color: #555; box-shadow: none; }
 
+/* ===== LINK一覧 ===== */
+.links-box { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 680px; margin: 0 auto; padding-bottom: 40px; }
+.link-row { display: flex; align-items: center; gap: 8px; }
+.link-card {
+  flex: 1; display: flex; align-items: center; gap: 16px;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 18px 20px;
+  text-decoration: none; transition: opacity 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent; min-width: 0;
+}
+.link-card:hover { border-color: var(--primary); opacity: 0.9; }
+.link-card:active { opacity: 0.7; }
+.link-featured { background: #1a2e26; border: 1.5px solid var(--primary); box-shadow: 0 0 0 1px var(--primary-glow); }
+.link-icon { font-size: 32px; flex-shrink: 0; }
+.link-body { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.link-label { font-size: 20px; font-weight: 700; color: var(--text); }
+.link-desc { font-size: 15px; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.link-arrow { color: var(--primary); font-size: 28px; flex-shrink: 0; }
+.link-btns { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+.link-edit-btn, .link-del-btn { background: none; border: none; font-size: 20px; padding: 6px; border-radius: 8px; cursor: pointer; }
+.link-edit-btn:hover { background: var(--surface2); }
+.link-del-btn:hover { background: var(--surface2); }
+
 /* ===== 設定画面 ===== */
 .settings-box { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 650px; margin: 0 auto; padding-bottom: 40px; }
 .setting-group { background: var(--surface); border: 1px solid var(--border2); padding: 16px; border-radius: 14px; display: flex; flex-direction: column; gap: 8px; }
@@ -366,6 +389,9 @@ button { cursor: pointer; font-family: inherit; }
     </div>
     <div class="nav-item" id="nav-notify">
       <div class="nav-click-area" onclick="switchNav('notify')">🔔 通知板</div>
+    </div>
+    <div class="nav-item" id="nav-links">
+      <div class="nav-click-area" onclick="switchNav('links')">🔗 LINK一覧</div>
     </div>
 
   </div>
@@ -595,6 +621,8 @@ function switchNav(type) {
     inputArea.style.display = 'none'; topTitle.textContent = '📁 タスク・進行中計画'; renderProjects();
   } else if (type === 'notify') {
     inputArea.style.display = 'none'; topTitle.textContent = '🔔 通知・お知らせボード'; renderNotifications();
+  } else if (type === 'links') {
+    inputArea.style.display = 'none'; topTitle.textContent = '🔗 LINK一覧'; renderLinks();
   } else if (type === 'settings') {
     inputArea.style.display = 'none'; topTitle.textContent = '⚙️ アプリ設定'; renderSettings();
   }
@@ -678,6 +706,109 @@ function deleteNotify(id) {
   let stored = myNotifies.filter(n => n.id !== id);
   myNotifies = stored;
   localStorage.setItem('TENOHIRA_notifies', JSON.stringify(stored)); renderNotifications();
+}
+
+// LINK一覧画面
+const DEFAULT_LINKS = [
+  { id: 1, icon: '🤖', label: 'AI・ツール集',    url: 'https://mahitogawa.github.io/ai',       desc: '生成AIパスポート・AIツール集' },
+  { id: 2, icon: '💴', label: '家計簿',          url: 'https://mahitogawa.github.io/kakeibo',  desc: '家計簿アプリ' },
+  { id: 3, icon: '🐱', label: 'にゃんログ',      url: 'https://mahitogawa.github.io/nyanlog',  desc: '気分・健康記録', featured: true },
+  { id: 4, icon: '🤲', label: 'てのひら',        url: 'https://mahitogawa.github.io/tenohira', desc: '福祉相談AI' },
+  { id: 5, icon: '📝', label: '原稿AI',          url: 'https://mahitogawa.github.io/gennai',   desc: '原稿・申立書AI' },
+];
+function loadLinks() {
+  return JSON.parse(localStorage.getItem('TENOHIRA_links')) || DEFAULT_LINKS;
+}
+function saveLinks(links) {
+  localStorage.setItem('TENOHIRA_links', JSON.stringify(links));
+}
+
+function renderLinks() {
+  const links = loadLinks();
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const cards = links.map(l => `
+    <div class="link-row">
+      <a class="link-card${l.featured ? ' link-featured' : ''}" href="${esc(l.url)}" target="_blank" rel="noopener">
+        <span class="link-icon">${esc(l.icon)}</span>
+        <span class="link-body">
+          <span class="link-label">${esc(l.label)}</span>
+          <span class="link-desc">${esc(l.desc)}</span>
+        </span>
+        <span class="link-arrow">›</span>
+      </a>
+      <div class="link-btns">
+        <button class="link-edit-btn" onclick="editLink(${l.id})" title="編集">✏️</button>
+        <button class="link-del-btn"  onclick="deleteLink(${l.id})" title="削除">🗑️</button>
+      </div>
+    </div>`).join('');
+
+  chatArea.innerHTML = `
+    <div class="links-box">
+      <div class="panel-title">🔗 LINK一覧</div>
+      ${cards || '<div class="panel-empty">リンクがありません🐾</div>'}
+      <button class="add-submit" style="margin-top:8px;" onclick="addLinkForm()">＋ リンクを追加</button>
+    </div>`;
+}
+
+function addLinkForm(prefill) {
+  const l = prefill || { id: null, icon: '🔗', label: '', url: 'https://mahitogawa.github.io/', desc: '', featured: false };
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  chatArea.innerHTML = `
+    <div class="links-box">
+      <div class="panel-title">${l.id ? '✏️ リンクを編集' : '➕ リンクを追加'}</div>
+      <div class="setting-group">
+        <div class="setting-label">アイコン（絵文字）</div>
+        <input id="lf-icon" class="setting-field" value="${esc(l.icon)}" maxlength="4" style="width:80px;">
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">ラベル（名前）</div>
+        <input id="lf-label" class="setting-field" value="${esc(l.label)}" placeholder="にゃんログ">
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">URL</div>
+        <input id="lf-url" class="setting-field" value="${esc(l.url)}" placeholder="https://mahitogawa.github.io/...">
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">説明</div>
+        <input id="lf-desc" class="setting-field" value="${esc(l.desc)}" placeholder="ひとことメモ">
+      </div>
+      <div class="setting-group" style="flex-direction:row;align-items:center;gap:12px;">
+        <input type="checkbox" id="lf-featured" ${l.featured ? 'checked' : ''} style="width:20px;height:20px;cursor:pointer;">
+        <label for="lf-featured" class="setting-label" style="cursor:pointer;">おすすめ表示（緑枠）</label>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button class="add-submit" style="flex:1;" onclick="saveLinkForm(${l.id || 'null'})">保存する🐾</button>
+        <button class="add-submit" style="flex:1;background:var(--surface2);color:var(--text-sub);" onclick="renderLinks()">キャンセル</button>
+      </div>
+    </div>`;
+}
+
+function saveLinkForm(id) {
+  const icon  = document.getElementById('lf-icon').value.trim()  || '🔗';
+  const label = document.getElementById('lf-label').value.trim();
+  const url   = document.getElementById('lf-url').value.trim();
+  const desc  = document.getElementById('lf-desc').value.trim();
+  const featured = document.getElementById('lf-featured').checked;
+  if (!label || !url) { alert('ラベルとURLは必須にゃ🐾'); return; }
+  let links = loadLinks();
+  if (id) {
+    links = links.map(l => l.id === id ? { ...l, icon, label, url, desc, featured } : l);
+  } else {
+    links.push({ id: Date.now(), icon, label, url, desc, featured });
+  }
+  saveLinks(links);
+  renderLinks();
+}
+
+function editLink(id) {
+  const l = loadLinks().find(l => l.id === id);
+  if (l) addLinkForm(l);
+}
+
+function deleteLink(id) {
+  if (!confirm('このリンクを削除しますか？')) return;
+  saveLinks(loadLinks().filter(l => l.id !== id));
+  renderLinks();
 }
 
 // 設定画面の描画
