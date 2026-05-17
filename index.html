@@ -436,8 +436,16 @@ const sidebar    = document.getElementById('sidebar');
 const overlay    = document.getElementById('overlay');
 const inputArea  = document.getElementById('input-area');
 
-renderHistList();
-if (histories.length > 0) { selectHistory(histories[0].id); } else { renderWelcome(); }
+// 安全に起動
+try {
+  renderHistList();
+  renderWelcome();
+} catch(e) {
+  console.warn('Init error:', e);
+  localStorage.removeItem('TENOHIRA_histories');
+  histories = [];
+  renderWelcome();
+}
 
 mainInput.addEventListener('input', () => {
   mainInput.style.height = 'auto';
@@ -677,18 +685,24 @@ function deleteHistory(id) {
 }
 
 function selectHistory(id) {
-  currentId = id;
-  const h = histories.find(x => x.id === id);
-  topTitle.textContent = h?.title || 'TENOHIRA AI';
-  // sessionを復元
-  currentSession = h?.session || newSession();
-  chatArea.innerHTML = ''; renderHistList(); updateStateBadge();
-  if (h && h.msgs && h.msgs.length > 0) {
-    h.msgs.forEach(m => addMsgEl(m.role, m.content));
-    if (currentSession.state === 'workflow') {
-      showWorkflowCards(currentSession.domain);
+  try {
+    currentId = id;
+    const h = histories.find(x => x.id === id);
+    topTitle.textContent = h?.title || 'TENOHIRA AI';
+    currentSession = (h?.session && h.session.state) ? h.session : newSession();
+    chatArea.innerHTML = '';
+    renderHistList();
+    updateStateBadge();
+    if (h && Array.isArray(h.msgs) && h.msgs.length > 0) {
+      h.msgs.forEach(m => { if (m.role && m.content) addMsgEl(m.role, m.content); });
+      if (currentSession.state === 'workflow') showWorkflowCards(currentSession.domain);
+    } else {
+      renderWelcome();
     }
-  } else { renderWelcome(); }
+  } catch(e) {
+    console.warn('selectHistory error:', e);
+    renderWelcome();
+  }
 }
 
 function newChat() {
