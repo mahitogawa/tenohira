@@ -367,14 +367,12 @@ button { cursor: pointer; font-family: inherit; }
     <div class="nav-item" id="nav-notify">
       <div class="nav-click-area" onclick="switchNav('notify')">🔔 通知板</div>
     </div>
-    <div class="nav-item" id="nav-settings">
-      <div class="nav-click-area" onclick="switchNav('settings')">⚙️ 設定</div>
-    </div>
+
   </div>
   <div class="section-label">最近の会話</div>
   <div id="hist-list"></div>
   <div id="sb-footer">
-    <div id="user-row" onclick="switchNav('settings')" title="設定を開く">
+    <div id="user-row" onclick="closeSidebar(); switchNav('settings');" title="設定を開く">
       <div class="user-avatar" id="avatar-char">M</div>
       <div id="user-name">mahitogawa</div>
       <span style="color:var(--text-dim);font-size:18px;">⚙️</span>
@@ -684,18 +682,19 @@ function deleteNotify(id) {
 
 // 設定画面の描画
 function renderSettings() {
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   chatArea.innerHTML = `
     <div class="settings-box">
       <div class="panel-title">⚙️ アプリ設定（フル版）</div>
-      <div class="setting-group"><div class="setting-label">👤 ユーザー名</div><input type="text" id="cfg-username" class="setting-field" value="${config.userName}"></div>
-      <div class="setting-group"><div class="setting-label">🔗 Workers AI URL</div><input type="text" id="cfg-workerurl" class="setting-field" value="${config.workerUrl}"></div>
-      <div class="setting-group"><div class="setting-label">🐱 マーニャのメッセージ</div><input type="text" id="cfg-cat1msg" class="setting-field" value="${config.cat1Msg}"></div>
-      <div class="setting-group"><div class="setting-label">🐱 アイのメッセージ</div><input type="text" id="cfg-cat2msg" class="setting-field" value="${config.cat2Msg}"></div>
-      <div class="setting-group"><div class="setting-label">🧠 AIシステムプロンプト</div><textarea id="cfg-sysprompt" class="setting-field" rows="4">${config.systemPrompt}</textarea></div>
+      <div class="setting-group"><div class="setting-label">👤 ユーザー名</div><input type="text" id="cfg-username" class="setting-field" value="${esc(config.userName)}"></div>
+      <div class="setting-group"><div class="setting-label">🔗 Workers AI URL</div><input type="text" id="cfg-workerurl" class="setting-field" value="${esc(config.workerUrl)}"></div>
+      <div class="setting-group"><div class="setting-label">🐱 マーニャのメッセージ</div><input type="text" id="cfg-cat1msg" class="setting-field" value="${esc(config.cat1Msg)}"></div>
+      <div class="setting-group"><div class="setting-label">🐱 アイのメッセージ</div><input type="text" id="cfg-cat2msg" class="setting-field" value="${esc(config.cat2Msg)}"></div>
+      <div class="setting-group"><div class="setting-label">🧠 AIシステムプロンプト</div><textarea id="cfg-sysprompt" class="setting-field" rows="4">${esc(config.systemPrompt)}</textarea></div>
       <div class="setting-group">
         <div class="setting-label">🎨 テーマカラー</div>
         <div class="setting-row">
-          <input type="color" id="cfg-themecolor" value="${config.themeColor}" style="width:50px; height:40px; border:none; cursor:pointer;">
+          <input type="color" id="cfg-themecolor" value="${esc(config.themeColor)}" style="width:50px; height:40px; border:none; cursor:pointer;">
           <select id="cfg-themepreset" class="setting-select" onchange="document.getElementById('cfg-themecolor').value = this.value">
             <option value="#2e9e7c">エメラルド（標準）</option><option value="#e0a82e">ゴールド</option><option value="#3b82f6">ブルー</option><option value="#a855f7">パープル</option>
           </select>
