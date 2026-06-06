@@ -33,14 +33,14 @@
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; }
-html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+html { font-size: 1rem; -webkit-text-size-adjust: 100%; }
 body {
   font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
   background: var(--bg);
   color: var(--text);
   display: flex;
   position: relative;
-  font-size: 15px;
+  font-size: 0.94rem;
 }
 button { cursor: pointer; font-family: inherit; }
 
@@ -87,7 +87,7 @@ button { cursor: pointer; font-family: inherit; }
   border-bottom: 1px solid var(--border);
 }
 #sb-logo {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text);
   display: flex;
@@ -103,7 +103,7 @@ button { cursor: pointer; font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 1rem;
   color: white;
 }
 
@@ -111,7 +111,7 @@ button { cursor: pointer; font-family: inherit; }
   background: none;
   border: none;
   color: var(--text-sub);
-  font-size: 18px;
+  font-size: 1.125rem;
   padding: 6px 8px;
   border-radius: 8px;
   display: inline-flex;
@@ -129,7 +129,7 @@ button { cursor: pointer; font-family: inherit; }
   border: 1px solid var(--border2);
   border-radius: 10px;
   color: var(--text-sub);
-  font-size: 13px;
+  font-size: 0.81rem;
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -140,7 +140,7 @@ button { cursor: pointer; font-family: inherit; }
   width: calc(100% - 24px);
 }
 #new-chat-btn:hover { background: var(--primary-bg); border-color: var(--primary-light); color: var(--primary); }
-#new-chat-btn .btn-icon { font-size: 14px; }
+#new-chat-btn .btn-icon { font-size: 0.875rem; }
 
 #sb-nav { padding: 4px 8px; }
 .nav-item {
@@ -150,7 +150,7 @@ button { cursor: pointer; font-family: inherit; }
   padding: 9px 10px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 0.81rem;
   color: var(--text-sub);
   font-weight: 500;
   transition: all 0.15s;
@@ -159,14 +159,14 @@ button { cursor: pointer; font-family: inherit; }
 .nav-item.active { background: var(--primary-bg); color: var(--primary); }
 
 .nav-click-area { display: flex; align-items: center; gap: 8px; flex: 1; height: 100%; }
-.nav-emoji { font-size: 14px; }
+.nav-emoji { font-size: 0.875rem; }
 
-.add-chat-btn { background: none; border: none; color: var(--text-dim); font-size: 16px; padding: 2px 8px; border-radius: 6px; }
+.add-chat-btn { background: none; border: none; color: var(--text-dim); font-size: 1rem; padding: 2px 8px; border-radius: 6px; }
 .add-chat-btn:hover { background: var(--border); color: var(--primary); }
 
 .section-label {
   padding: 16px 14px 6px;
-  font-size: 11px;
+  font-size: 0.69rem;
   color: var(--text-dim);
   letter-spacing: 0.08em;
   font-weight: 700;
@@ -183,7 +183,7 @@ button { cursor: pointer; font-family: inherit; }
   padding: 9px 10px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 0.81rem;
   color: var(--text-sub);
   margin-bottom: 2px;
   transition: all 0.15s;
@@ -197,7 +197,7 @@ button { cursor: pointer; font-family: inherit; }
   background: none;
   border: none;
   color: var(--text-dim);
-  font-size: 12px;
+  font-size: 0.75rem;
   padding: 3px 5px;
   border-radius: 4px;
 }
@@ -227,13 +227,13 @@ button { cursor: pointer; font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 0.81rem;
   font-weight: 700;
   color: #fff;
   flex-shrink: 0;
 }
-#user-name { font-size: 13px; color: var(--text-sub); flex: 1; font-weight: 500; }
-#user-settings-icon { font-size: 14px; color: var(--text-dim); }
+#user-name { font-size: 0.81rem; color: var(--text-sub); flex: 1; font-weight: 500; }
+#user-settings-icon { font-size: 0.875rem; color: var(--text-dim); }
 
 /* ===== メイン画面 ===== */
 #main { flex: 1; display: flex; flex-direction: column; width: 100%; height: 100%; min-width: 0; background: var(--bg); }
@@ -253,7 +253,7 @@ button { cursor: pointer; font-family: inherit; }
 #top-title {
   flex: 1;
   text-align: center;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--text-sub);
   white-space: nowrap;
   overflow: hidden;
@@ -265,7 +265,7 @@ button { cursor: pointer; font-family: inherit; }
   border: 1px solid var(--border2);
   border-radius: 20px;
   padding: 4px 10px;
-  font-size: 11px;
+  font-size: 0.69rem;
   color: var(--text-sub);
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -293,26 +293,26 @@ button { cursor: pointer; font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 2rem;
   box-shadow: 0 8px 24px var(--primary-glow);
   animation: float 4s ease-in-out infinite;
 }
 @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
 #welcome-title {
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 700;
   color: var(--text);
   line-height: 1.3;
   letter-spacing: -0.02em;
 }
-#welcome-sub { font-size: 14px; color: var(--text-sub); line-height: 1.8; }
+#welcome-sub { font-size: 0.875rem; color: var(--text-sub); line-height: 1.8; }
 #chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 420px; }
 .chip {
   background: var(--surface);
   border: 1px solid var(--border2);
   border-radius: 20px;
   padding: 8px 16px;
-  font-size: 13px;
+  font-size: 0.81rem;
   color: var(--text-sub);
   cursor: pointer;
   transition: all 0.2s;
@@ -332,7 +332,7 @@ button { cursor: pointer; font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 1rem;
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -345,7 +345,7 @@ button { cursor: pointer; font-family: inherit; }
   max-width: 82%;
   padding: 12px 16px;
   border-radius: 16px;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.75;
   white-space: pre-wrap;
   word-break: break-word;
@@ -396,14 +396,14 @@ button { cursor: pointer; font-family: inherit; }
 .app-card:hover { border-color: var(--primary-light); box-shadow: var(--shadow-md); transform: translateY(-1px); }
 .app-card:active { transform: scale(0.98); }
 .app-card.primary { border: 1.5px solid var(--primary-light); background: var(--primary-bg); }
-.card-icon { font-size: 26px; flex-shrink: 0; }
+.card-icon { font-size: 1.625rem; flex-shrink: 0; }
 .card-body { flex: 1; min-width: 0; }
-.card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
-.card-desc { font-size: 12px; color: var(--text-sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.card-arrow { color: var(--primary); font-size: 18px; flex-shrink: 0; }
+.card-title { font-size: 0.875rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.card-desc { font-size: 0.75rem; color: var(--text-sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card-arrow { color: var(--primary); font-size: 1.125rem; flex-shrink: 0; }
 
 /* ===== タスク・通知パネル ===== */
-.panel-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px; letter-spacing: -0.02em; }
+.panel-title { font-size: 1.125rem; font-weight: 700; color: var(--text); margin-bottom: 16px; letter-spacing: -0.02em; }
 .panel-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -419,10 +419,10 @@ button { cursor: pointer; font-family: inherit; }
   transition: border-color 0.15s;
 }
 .panel-card:hover { border-color: var(--border2); }
-.panel-card-text { font-size: 14px; font-weight: 500; color: var(--text); flex: 1; line-height: 1.5; }
-.panel-btn { background: none; border: none; color: var(--text-dim); font-size: 16px; padding: 6px; border-radius: 6px; flex-shrink: 0; transition: all 0.15s; }
+.panel-card-text { font-size: 0.875rem; font-weight: 500; color: var(--text); flex: 1; line-height: 1.5; }
+.panel-btn { background: none; border: none; color: var(--text-dim); font-size: 1rem; padding: 6px; border-radius: 6px; flex-shrink: 0; transition: all 0.15s; }
 .panel-btn:hover { color: var(--danger); background: #fee2e2; }
-.panel-empty { color: var(--text-dim); font-size: 14px; padding: 24px 0; text-align: center; }
+.panel-empty { color: var(--text-dim); font-size: 0.875rem; padding: 24px 0; text-align: center; }
 
 .add-box { display: flex; gap: 8px; margin-bottom: 16px; width: 100%; }
 .add-input {
@@ -432,7 +432,7 @@ button { cursor: pointer; font-family: inherit; }
   border-radius: 10px;
   color: var(--text);
   padding: 10px 14px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s;
@@ -445,7 +445,7 @@ button { cursor: pointer; font-family: inherit; }
   color: #fff;
   padding: 10px 18px;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -487,7 +487,7 @@ button { cursor: pointer; font-family: inherit; }
   border: none;
   outline: none;
   color: var(--text);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-family: inherit;
   resize: none;
   line-height: 1.6;
@@ -508,7 +508,7 @@ button { cursor: pointer; font-family: inherit; }
 #btn-mic {
   width: 36px;
   height: 36px;
-  font-size: 16px;
+  font-size: 1rem;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -527,7 +527,7 @@ button { cursor: pointer; font-family: inherit; }
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 5px 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-sub);
   cursor: pointer;
@@ -550,7 +550,7 @@ button { cursor: pointer; font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  font-size: 0.94rem;
   box-shadow: 0 2px 8px var(--primary-glow);
   flex-shrink: 0;
   transition: all 0.15s;
@@ -571,13 +571,13 @@ button { cursor: pointer; font-family: inherit; }
 .link-card:hover { border-color: var(--primary-light); box-shadow: var(--shadow-md); transform: translateY(-1px); }
 .link-card:active { transform: scale(0.98); }
 .link-featured { border: 1.5px solid var(--primary-light); background: var(--primary-bg); }
-.link-icon { font-size: 24px; flex-shrink: 0; }
+.link-icon { font-size: 1.5rem; flex-shrink: 0; }
 .link-body { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.link-label { font-size: 14px; font-weight: 700; color: var(--text); }
-.link-desc { font-size: 12px; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.link-arrow { color: var(--primary); font-size: 18px; flex-shrink: 0; }
+.link-label { font-size: 0.875rem; font-weight: 700; color: var(--text); }
+.link-desc { font-size: 0.75rem; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.link-arrow { color: var(--primary); font-size: 1.125rem; flex-shrink: 0; }
 .link-btns { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
-.link-edit-btn, .link-del-btn { background: none; border: none; font-size: 14px; padding: 5px; border-radius: 6px; cursor: pointer; transition: background 0.15s; }
+.link-edit-btn, .link-del-btn { background: none; border: none; font-size: 0.875rem; padding: 5px; border-radius: 6px; cursor: pointer; transition: background 0.15s; }
 .link-edit-btn:hover { background: var(--bg2); }
 .link-del-btn:hover { background: #fee2e2; }
 
@@ -593,15 +593,15 @@ button { cursor: pointer; font-family: inherit; }
   gap: 8px;
   box-shadow: var(--shadow);
 }
-.setting-label { font-size: 12px; font-weight: 700; color: var(--text-sub); display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
-.setting-desc { font-size: 12px; color: var(--text-dim); }
+.setting-label { font-size: 0.75rem; font-weight: 700; color: var(--text-sub); display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+.setting-desc { font-size: 0.75rem; color: var(--text-dim); }
 .setting-field {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--text);
   padding: 9px 12px;
-  font-size: 14px;
+  font-size: 0.875rem;
   outline: none;
   width: 100%;
   font-family: inherit;
@@ -615,7 +615,7 @@ button { cursor: pointer; font-family: inherit; }
   border-radius: 8px;
   color: var(--text);
   padding: 9px 10px;
-  font-size: 14px;
+  font-size: 0.875rem;
   outline: none;
   font-family: inherit;
   cursor: pointer;
@@ -1068,7 +1068,7 @@ function addLinkForm(prefill) {
       <div class="setting-group"><div class="setting-label">説明</div><input id="lf-desc" class="setting-field" value="${esc(l.desc)}" placeholder="ひとことメモ"></div>
       <div class="setting-group" style="flex-direction:row;align-items:center;gap:12px;">
         <input type="checkbox" id="lf-featured" ${l.featured ? 'checked' : ''} style="width:16px;height:16px;cursor:pointer;accent-color:var(--primary);">
-        <label for="lf-featured" class="setting-label" style="cursor:pointer;text-transform:none;font-size:14px;">おすすめ表示（オレンジ枠）</label>
+        <label for="lf-featured" class="setting-label" style="cursor:pointer;text-transform:none;font-size:0.875rem;">おすすめ表示（オレンジ枠）</label>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px;">
         <button class="add-submit" style="flex:1;" onclick="saveLinkForm(${l.id || 'null'})">保存する🐾</button>
