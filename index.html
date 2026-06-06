@@ -721,9 +721,10 @@ function applyConfig() {
         --primary-bg: ${bg} !important;
         --primary-glow: ${glow} !important;
       }
-      html { font-size: ${config.fontSize} !important; }
     `;
   }
+  // フォントサイズは直接セット（!importantで確実に反映）
+  document.documentElement.style.setProperty('font-size', config.fontSize, 'important');
   const nameEl = document.getElementById('user-name');
   if (nameEl) nameEl.textContent = config.userName;
   const avatarEl = document.getElementById('avatar-char');
@@ -788,13 +789,13 @@ let myTasks = JSON.parse(localStorage.getItem('TENOHIRA_tasks')) || [
 ];
 
 function getNotifies() {
-  return JSON.parse(localStorage.getItem('TENOHIRA_notifies')) || [
+  return [
     { id: 1, type: 'schedule', text: '📅 5月20日頃：訪問診療の先生が来るリマインドだにゃ！' },
     { id: 2, type: 'cat1', text: config.cat1Msg },
     { id: 3, type: 'cat2', text: config.cat2Msg },
   ];
 }
-let myNotifies = getNotifies();
+let myNotifies = JSON.parse(localStorage.getItem('TENOHIRA_notifies')) || getNotifies();
 
 const chatArea  = document.getElementById('chat-area');
 const mainInput = document.getElementById('main-input');
@@ -891,7 +892,8 @@ async function send(textOverride) {
   addMsgEl('user', text); addTyping();
 
   try {
-    const [routerResult, reply] = await Promise.all([runRouter(text), runExecutor(text)]);
+    const routerResult = await runRouter(text);
+    const reply = await runExecutor(text);
     removeTyping(); updateStateBadge();
     currentSession.history.push({ role: 'user', content: text }, { role: 'assistant', content: reply });
     currentChat.msgs = currentSession.history; currentChat.session = currentSession;
@@ -1007,7 +1009,9 @@ function deleteTask(id) {
 }
 
 function renderNotifications() {
-  myNotifies = JSON.parse(localStorage.getItem('TENOHIRA_notifies')) || getNotifies();
+  const stored = localStorage.getItem('TENOHIRA_notifies');
+  myNotifies = stored ? JSON.parse(stored) : getNotifies();
+  if (!stored) localStorage.setItem('TENOHIRA_notifies', JSON.stringify(myNotifies));
   let listHtml = '';
   myNotifies.forEach(n => {
     const color = n.type === 'schedule' ? '#e0a82e' : (n.type === 'cat1' ? 'var(--primary)' : '#a855f7');
@@ -1113,7 +1117,7 @@ function renderSettings() {
       </div>
       <div class="setting-group">
         <div class="setting-label">🔎 文字サイズ</div>
-        <select id="cfg-fontsize" class="setting-select" onchange="document.documentElement.style.fontSize=this.value">
+        <select id="cfg-fontsize" class="setting-select" onchange="document.documentElement.style.setProperty('font-size', this.value, 'important')">
           <option value="13px" ${config.fontSize==='13px'?'selected':''}>小さめ</option>
           <option value="15px" ${config.fontSize==='15px'?'selected':''}>標準</option>
           <option value="17px" ${config.fontSize==='17px'?'selected':''}>大きめ</option>
@@ -1142,6 +1146,12 @@ function saveConfig() {
     });
     localStorage.setItem('TENOHIRA_notifies', JSON.stringify(storedNotifies));
   }
+  // メモリ上のmyNotifiesも同期
+  myNotifies = myNotifies.map(n => {
+    if (n.type === 'cat1') n.text = config.cat1Msg;
+    if (n.type === 'cat2') n.text = config.cat2Msg;
+    return n;
+  });
   applyConfig(); renderHistList();
   alert('設定を保存したにゃ！🐾'); switchNav('chat');
 }
@@ -1192,7 +1202,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const rec = new SR();
   rec.lang = 'ja-JP'; rec.continuous = false; rec.interimResults = false;
-  rec.onresult = e => { mainInput.value = e.results[0][0].transcript; btnMic.textContent = '🎤'; send(); };
+  rec.onresult = e => { const t = e.results[0][0].transcript; mainInput.value = t; btnMic.textContent = '🎤'; send(t); };
   rec.onend = () => btnMic.textContent = '🎤';
   rec.onerror = () => btnMic.textContent = '🎤';
   btnMic.addEventListener('click', () => {
